@@ -60,7 +60,7 @@ const DonsMerci = () => {
           </h1>
           <p className="font-serif-body text-lg text-[var(--ivory-muted)] mb-8 leading-relaxed">
             Votre offrande de {status.data?.amount} {status.data?.currency?.toUpperCase()} a été reçue. Votre âme rejoint
-            le cercle des gardiens du sanctuaire. Une confirmation vous a été envoyée.
+            le cercle des gardiens du espace. Une confirmation vous a été envoyée.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link to="/bibliotheque" className="btn-sacred sharp" data-testid="merci-cta-library">

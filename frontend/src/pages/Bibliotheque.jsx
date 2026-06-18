@@ -56,7 +56,7 @@ const Bibliotheque = () => {
     try {
       if (editing === "new") {
         await api.post("/admin/prayers", form);
-        toast.success("Prière ajoutée au sanctuaire.");
+        toast.success("Prière ajoutée au espace.");
       } else {
         await api.put(`/admin/prayers/${editing.id}`, form);
         toast.success("Prière mise à jour.");
@@ -74,7 +74,7 @@ const Bibliotheque = () => {
     if (!window.confirm(`Supprimer définitivement « ${p.title} » ?`)) return;
     try {
       await api.delete(`/admin/prayers/${p.id}`);
-      toast.success("Prière retirée du sanctuaire.");
+      toast.success("Prière retirée du espace.");
       loadPrayers();
     } catch (err) {
       toast.error(err.response?.data?.detail || "Suppression impossible.");
@@ -184,7 +184,7 @@ const Bibliotheque = () => {
                 <Lock className="mx-auto text-[var(--gold)] mb-4" strokeWidth={1.2} size={32} />
                 <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-3">Prière scellée</h3>
                 <p className="font-serif-body text-[var(--ivory-muted)] mb-8 max-w-md mx-auto">
-                  Cette prière est confiée aux gardiens du sanctuaire. Devenez membre donateur pour en recevoir l'accès.
+                  Cette prière est confiée aux gardiens du espace. Devenez membre donateur pour en recevoir l'accès.
                 </p>
                 <Link to="/dons" className="btn-sacred sharp" data-testid="locked-cta">Faire une offrande</Link>
               </div>

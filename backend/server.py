@@ -1,4 +1,4 @@
-"""Sanctuaire Sacré - Backend API for spiritual prayers platform."""
+"""Espace Sacré - Backend API for spiritual prayers platform."""
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
@@ -42,7 +42,7 @@ client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
 # App
-app = FastAPI(title="Sanctuaire Sacré API")
+app = FastAPI(title="Espace Sacré API")
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer(auto_error=False)
 
@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 DONATION_PACKAGES = {
     "lueur": {"amount": 7.0, "currency": "eur", "label": "Lueur de Lumière"},
     "cierge": {"amount": 21.0, "currency": "eur", "label": "Cierge Béni"},
-    "sanctuaire": {"amount": 49.0, "currency": "eur", "label": "Offrande du Sanctuaire"},
+    "sanctuaire": {"amount": 49.0, "currency": "eur", "label": "Offrande de l'Espace"},
     "gardien": {"amount": 108.0, "currency": "eur", "label": "Gardien des Âmes"},
 }
 DONOR_THRESHOLD = 21.0  # any donation >= grants donor status
@@ -174,7 +174,7 @@ async def get_optional_user(
 
 async def require_admin(user=Depends(get_current_user)):
     if not user.get("is_admin"):
-        raise HTTPException(403, "Accès réservé aux gardiens du sanctuaire (admin).")
+        raise HTTPException(403, "Accès réservé aux gardiens de l'espace (admin).")
     return user
 
 async def send_email_async(to: str, subject: str, html: str):
@@ -192,7 +192,7 @@ async def send_email_async(to: str, subject: str, html: str):
 # ----------- Routes: Health -----------
 @api_router.get("/")
 async def root():
-    return {"message": "Sanctuaire Sacré API", "status": "ok"}
+    return {"message": "Espace Sacré API", "status": "ok"}
 
 # ----------- Routes: Auth -----------
 @api_router.post("/auth/register")
@@ -219,11 +219,11 @@ async def register(payload: UserRegister):
     # welcome email (async, best-effort)
     asyncio.create_task(send_email_async(
         doc["email"],
-        "Bienvenue au Sanctuaire Sacré",
+        "Bienvenue au Espace Sacré",
         f"<div style='font-family:Georgia,serif;background:#08090C;color:#F4ECD8;padding:32px;'>"
         f"<h1 style='color:#D4AF37;font-weight:300;'>Bienvenue, {doc['name']}</h1>"
         f"<p>Votre âme rejoint notre cercle de lumière. Que la paix vous accompagne.</p>"
-        f"<p style='color:#C8BAA1;'>— Sanctuaire Sacré</p></div>"
+        f"<p style='color:#C8BAA1;'>— Espace Sacré</p></div>"
     ))
     return {"token": token, "user": to_public_user(doc)}
 
@@ -380,7 +380,7 @@ async def create_prayer_request(
         f"Nos prières s'élèvent désormais avec votre intention.</p>"
         f"<blockquote style='border-left:2px solid #D4AF37;padding-left:16px;color:#C8BAA1;'>"
         f"{doc['intention']}</blockquote>"
-        f"<p style='color:#C8BAA1;'>— Sanctuaire Sacré</p></div>"
+        f"<p style='color:#C8BAA1;'>— Espace Sacré</p></div>"
     ))
 
     return {"id": req_id, "message": "Demande reçue. Votre intention est entre nos mains."}
@@ -544,10 +544,10 @@ async def donation_status(session_id: str):
                 email_to,
                 "Merci pour votre offrande sacrée",
                 f"<div style='font-family:Georgia,serif;background:#08090C;color:#F4ECD8;padding:32px;'>"
-                f"<h1 style='color:#D4AF37;font-weight:300;'>Votre lumière éclaire le Sanctuaire</h1>"
+                f"<h1 style='color:#D4AF37;font-weight:300;'>Votre lumière éclaire l'Espace</h1>"
                 f"<p>Votre offrande de {tx['amount']} {tx['currency'].upper()} a été reçue avec gratitude.</p>"
                 f"<p>Votre accès aux prières sacrées réservées est désormais ouvert.</p>"
-                f"<p style='color:#C8BAA1;'>— Sanctuaire Sacré</p></div>"
+                f"<p style='color:#C8BAA1;'>— Espace Sacré</p></div>"
             ))
 
     await db.payment_transactions.update_one({"session_id": session_id}, {"$set": update})

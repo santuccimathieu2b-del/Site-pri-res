@@ -5,14 +5,14 @@ const APropos = () => (
   <div className="max-w-3xl mx-auto px-6 lg:px-10 py-20" data-testid="apropos-page">
     <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Notre mission</p>
     <h1 className="font-serif-display text-5xl md:text-6xl text-[var(--ivory)] leading-tight mb-10">
-      Un <em className="text-[var(--gold)]">sanctuaire</em> sans murs, sans dogme.
+      Un <em className="text-[var(--gold)]">espace</em> sans murs, sans dogme.
     </h1>
 
     <div className="divider-ornament mb-12"><Flame size={16} strokeWidth={1.2} /></div>
 
     <article className="font-serif-body text-lg text-[var(--ivory-muted)] leading-loose space-y-6">
       <p className="initial-letter">
-        Sanctuaire Sacré est né d'une certitude simple&nbsp;: la prière n'appartient à aucune religion en particulier.
+        Espace Sacré est né d'une certitude simple&nbsp;: la prière n'appartient à aucune religion en particulier.
         Elle appartient à celui qui prie. Depuis les hymnes des Védas jusqu'aux invocations égyptiennes, depuis les
         psaumes hébraïques jusqu'aux mantras bouddhistes, chaque tradition a posé sur le monde une parole de paix,
         de soin, de protection.

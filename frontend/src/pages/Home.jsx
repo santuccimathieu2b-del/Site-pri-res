@@ -23,12 +23,12 @@ const Home = () => {
         <div className="relative max-w-4xl mx-auto px-6 lg:px-10 py-28 md:py-40">
           <div className="reveal">
             <p className="font-engraved text-[var(--gold)] text-[11px] mb-8 text-center">
-              ✦  Sanctuaire Sacré  ✦
+              ✦  Espace Sacré  ✦
             </p>
             <div className="divider-ornament mb-12"><Flame size={16} strokeWidth={1.2} className="flicker" /></div>
 
             <p className="font-serif-display text-3xl md:text-5xl text-[var(--ivory)] leading-snug text-center italic">
-              Ce sanctuaire n'appartient à aucune <em className="text-[var(--gold)] not-italic">religion</em>.
+              Ce espace n'appartient à aucune <em className="text-[var(--gold)] not-italic">religion</em>.
             </p>
 
             <p className="font-serif-body text-xl md:text-2xl text-[var(--ivory-muted)] leading-relaxed text-center mt-10 reveal-2">

@@ -51,9 +51,9 @@ const EspaceMembre = () => {
           </h1>
           <p className="font-serif-body text-[var(--ivory-muted)] mt-3">
             {user.is_donor ? (
-              <span className="flex items-center gap-2"><Flame size={14} className="text-[var(--gold)]" /> Gardien du sanctuaire — accès aux prières sacrées et aux oraisons personnelles.</span>
+              <span className="flex items-center gap-2"><Flame size={14} className="text-[var(--gold)]" /> Gardien du espace — accès aux prières sacrées et aux oraisons personnelles.</span>
             ) : (
-              <span>Membre du sanctuaire — accédez aux prières scellées en devenant gardien.</span>
+              <span>Membre du espace — accédez aux prières scellées en devenant gardien.</span>
             )}
           </p>
         </div>
@@ -76,7 +76,7 @@ const EspaceMembre = () => {
             <div className="locked-overlay sharp p-8 text-center" data-testid="ai-locked">
               <Lock className="mx-auto text-[var(--gold)] mb-4" strokeWidth={1.2} size={28} />
               <p className="font-serif-body text-[var(--ivory-muted)] mb-6">
-                La composition d'oraisons personnelles est réservée aux gardiens du sanctuaire.
+                La composition d'oraisons personnelles est réservée aux gardiens du espace.
               </p>
               <Link to="/dons" className="btn-sacred sharp" data-testid="ai-locked-cta">Devenir gardien</Link>
             </div>

@@ -8,7 +8,7 @@ const Footer = () => (
       <div>
         <div className="flex items-center gap-3 mb-4">
           <Flame className="text-[var(--gold)] flicker" strokeWidth={1.2} size={22} />
-          <span className="font-engraved text-[var(--gold)] text-xs">Sanctuaire Sacré</span>
+          <span className="font-engraved text-[var(--gold)] text-xs">Espace Sacré</span>
         </div>
         <p className="text-sm text-[var(--ivory-muted)] leading-relaxed font-serif-body italic">
           Un refuge spirituel non-confessionnel pour les âmes en quête de soins, de protection et de libération.
@@ -24,7 +24,7 @@ const Footer = () => (
         </ul>
       </div>
       <div>
-        <h4 className="font-engraved text-[var(--gold)] text-[11px] mb-4">Sanctuaire</h4>
+        <h4 className="font-engraved text-[var(--gold)] text-[11px] mb-4">Espace</h4>
         <ul className="space-y-2 text-sm text-[var(--ivory-muted)]">
           <li><Link to="/apropos" className="hover:text-[var(--gold)] transition">Notre mission</Link></li>
           <li><Link to="/espace-membre" className="hover:text-[var(--gold)] transition">Espace membre</Link></li>
@@ -39,7 +39,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="border-t border-[rgba(212,175,55,0.08)] py-6 text-center text-xs text-[var(--ivory-muted)] font-engraved">
-      © {new Date().getFullYear()} Sanctuaire Sacré — Tous chemins préservés
+      © {new Date().getFullYear()} Espace Sacré — Tous chemins préservés
     </div>
   </footer>
 );

@@ -60,7 +60,7 @@ const Dons = () => {
               </p>
             ) : (
               <p className="font-serif-body text-sm text-[var(--ivory-muted)] mb-6 italic">
-                Soutien simple au sanctuaire
+                Soutien simple au espace
               </p>
             )}
             <button
@@ -81,7 +81,7 @@ const Dons = () => {
           <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-4">Ce que votre offrande permet</h3>
           <ul className="font-serif-body text-[var(--ivory-muted)] space-y-3 leading-relaxed">
             <li>— La transmission silencieuse de prières millénaires</li>
-            <li>— Le maintien du sanctuaire numérique ouvert à tous</li>
+            <li>— Le maintien du espace numérique ouvert à tous</li>
             <li>— L'accompagnement personnalisé des demandes</li>
             <li>— L'écriture d'oraisons inédites par notre guide intérieur</li>
           </ul>
@@ -92,7 +92,7 @@ const Dons = () => {
           <ul className="font-serif-body text-[var(--ivory-muted)] space-y-3 leading-relaxed">
             <li>— Accès aux prières scellées de la bibliothèque</li>
             <li>— Composition de prières personnelles illimitée</li>
-            <li>— Statut de gardien à vie du sanctuaire</li>
+            <li>— Statut de gardien à vie du espace</li>
             <li>— Notre gratitude la plus profonde</li>
           </ul>
         </div>

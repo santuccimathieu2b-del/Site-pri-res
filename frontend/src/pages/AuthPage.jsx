@@ -34,7 +34,7 @@ const AuthPage = ({ mode }) => {
       <div className="text-center mb-10">
         <Flame className="text-[var(--gold)] flicker mx-auto mb-4" strokeWidth={1.1} size={40} />
         <p className="font-engraved text-[var(--gold)] text-[11px] mb-2">
-          {mode === "login" ? "Retour au sanctuaire" : "Rejoindre le sanctuaire"}
+          {mode === "login" ? "Retour au espace" : "Rejoindre le espace"}
         </p>
         <h1 className="font-serif-display text-4xl text-[var(--ivory)]">
           {mode === "login" ? "Connexion" : "Inscription"}
