@@ -17,20 +17,32 @@ const Temoignages = () => {
         commencez le même chemin.
       </p>
 
-      <div className="grid md:grid-cols-2 gap-px bg-[rgba(212,175,55,0.12)]">
-        {items.map((t, i) => (
-          <div key={t.id} className="sacred-card sharp p-10" data-testid={`temoignage-${t.id}`}>
-            <ScrollText className="text-[var(--gold)] mb-4" strokeWidth={1.1} size={22} />
-            <p className="font-serif-display text-xl md:text-2xl italic text-[var(--ivory)] leading-snug mb-6">
-              « {t.text} »
-            </p>
-            <div className="flex justify-between items-end">
-              <p className="font-engraved text-[10px] text-[var(--gold)]">{t.name} — {t.city}</p>
-              <p className="font-engraved text-[10px] text-[var(--ivory-muted)]">{t.category}</p>
+      {items.length === 0 ? (
+        <div className="sacred-card sharp p-16 text-center" data-testid="temoignages-empty">
+          <ScrollText className="text-[var(--gold)] mx-auto mb-6" strokeWidth={1.1} size={32} />
+          <p className="font-serif-display text-2xl text-[var(--ivory)] italic">
+            Les premiers témoignages seront bientôt recueillis.
+          </p>
+          <p className="font-serif-body text-[var(--ivory-muted)] mt-4">
+            Cet espace reste ouvert au silence avant que les voix s'y déposent.
+          </p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-px bg-[rgba(212,175,55,0.12)]">
+          {items.map((t) => (
+            <div key={t.id} className="sacred-card sharp p-10" data-testid={`temoignage-${t.id}`}>
+              <ScrollText className="text-[var(--gold)] mb-4" strokeWidth={1.1} size={22} />
+              <p className="font-serif-display text-xl md:text-2xl italic text-[var(--ivory)] leading-snug mb-6">
+                « {t.text} »
+              </p>
+              <div className="flex justify-between items-end">
+                <p className="font-engraved text-[10px] text-[var(--gold)]">{t.name} — {t.city}</p>
+                <p className="font-engraved text-[10px] text-[var(--ivory-muted)]">{t.category}</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

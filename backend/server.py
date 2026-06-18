@@ -592,28 +592,7 @@ async def stripe_webhook(request: Request):
     return {"received": True}
 
 # ----------- Testimonies -----------
-TESTIMONIES = [
-    {
-        "id": "t1", "name": "Marie L.", "city": "Lyon",
-        "text": "Après des semaines d'angoisses inexpliquées, la prière de protection m'a redonné la paix. Je ne peux décrire ce qui s'est dénoué en moi.",
-        "category": "protection",
-    },
-    {
-        "id": "t2", "name": "Étienne D.", "city": "Bordeaux",
-        "text": "J'ai prié chaque soir avec les versets de soins pendant ma convalescence. Quelque chose d'invisible m'a porté jusqu'à la guérison.",
-        "category": "soins",
-    },
-    {
-        "id": "t3", "name": "Soraya B.", "city": "Marseille",
-        "text": "Le rituel d'exorcisme léger nous a délivrés d'une présence qui hantait notre demeure depuis l'héritage de ma grand-mère. Tout est apaisé désormais.",
-        "category": "exorcisme",
-    },
-    {
-        "id": "t4", "name": "Anonyme", "city": "Genève",
-        "text": "La prière personnalisée générée pour mon père mourant lui a offert le départ le plus doux. Merci infiniment.",
-        "category": "soins",
-    },
-]
+TESTIMONIES = []
 
 @api_router.get("/testimonies")
 async def get_testimonies():
