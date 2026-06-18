@@ -1,0 +1,120 @@
+{
+  "project_context": {
+    "domain": "Spirituality, Healing, Protection Prayers",
+    "theme": "Dark",
+    "archetype": "5 (Luxury / Sacred Antiquity)",
+    "audience": "People seeking spiritual help, healing, protection, exorcism (non-denominational)",
+    "language": "French",
+    "app_type": "hybrid_fullstack"
+  },
+  "colors": {
+    "background_primary": "#08090C",
+    "background_secondary": "#11131A",
+    "surface_glass": "rgba(20, 22, 28, 0.7)",
+    "primary_accent": "#D4AF37",
+    "primary_hover": "#F1C40F",
+    "secondary_accent": "#5E1914",
+    "text_primary": "#F4ECD8",
+    "text_secondary": "#C8BAA1",
+    "border_subtle": "rgba(212, 175, 55, 0.15)",
+    "error": "#8B0000",
+    "success": "#2D4A22"
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Cormorant Garamond, serif",
+      "weights": ["300", "400", "600"],
+      "usage_rules": "Use for all H1-H4. Tracking tight for large headings, tracking wide for small overlines. Never use Inter or sans-serif for headings."
+    },
+    "body": {
+      "font_family": "EB Garamond, serif",
+      "weights": ["400", "500"],
+      "usage_rules": "Use for body copy, paragraphs, and form inputs to maintain the manuscript feel."
+    },
+    "accents": {
+      "font_family": "Cinzel, serif",
+      "usage_rules": "Use for small caps, buttons, and navigation links. Provides a monumental, engraved stone look."
+    }
+  },
+  "layout_and_spacing": {
+    "strategy": "Asymmetric editorial layouts. Avoid centered 'SaaS' card grids. Use negative space generously to create breathing room and reverence.",
+    "container_padding": "p-8 md:p-16 lg:p-24",
+    "grid_system": "Bento Grid Mode A (Tetris Grid) but adapted for editorial style. Mix tall and wide blocks. Overlapping elements to simulate pages of a manuscript.",
+    "borders": "1px solid rgba(212, 175, 55, 0.2). Use sharp corners (rounded-none). No pill-shaped buttons; use sharp rectangles."
+  },
+  "components": {
+    "hero": {
+      "structure": "Split or asymmetrical layout. Large illuminated initial letter. Dark background with glowing candlelit overlay.",
+      "overlay": "bg-gradient-to-b from-black/90 via-black/50 to-[#08090C]",
+      "animations": "Subtle flicker animation on gold accents (opacity pulse). Slow fade-in of text."
+    },
+    "cards": {
+      "style": "Glassmorphism with heavily saturated dark background (backdrop-blur-xl bg-black/40). 1px gold-tinted border.",
+      "hover": "Slight lift, border glows slightly brighter gold. No heavy drop shadows; use inner glows."
+    },
+    "buttons": {
+      "primary": "Flat dark bordeaux (#5E1914) or transparent with solid gold (#D4AF37) border. Text in gold.",
+      "hover": "Background fills with gold/10, text brightens, subtle gold inner glow."
+    },
+    "navigation": {
+      "style": "Sticky, glassmorphism (backdrop-blur-xl bg-[#08090C]/80). Border bottom 1px gold/10.",
+      "links": "Cinzel, text-sm, tracking-widest, uppercase."
+    }
+  },
+  "motion_and_interaction": {
+    "micro_interactions": "Candle flicker effect on hover (opacity oscillating between 0.8 and 1).",
+    "page_transitions": "Slow, reverent fade-ins (duration 0.8s to 1.2s).",
+    "scroll": "Use Lenis for smooth momentum scrolling. Subtle parallax on ancient manuscript textures in the background."
+  },
+  "media": {
+    "images": [
+      {
+        "category": "hero_background",
+        "url": "https://images.unsplash.com/photo-1601922046210-41e129a3e64a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwzfHxjYW5kbGVsaWdodCUyMGRhcmslMjBtYWNyb3xlbnwwfHx8fDE3ODE3ODYxMjJ8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark macro shot of a candle for the hero section background, evoking a sacred atmosphere."
+      },
+      {
+        "category": "texture_overlay",
+        "url": "https://images.unsplash.com/photo-1648717008621-ee7e6acfe270?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwzfHxhbmNpZW50JTIwcGFyY2htZW50JTIwdGV4dHVyZXxlbnwwfHx8fDE3ODE3ODYxMjJ8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Weathered parchment texture. Use as a fixed background layer with mix-blend-overlay and very low opacity (5%) to give the whole site a subtle manuscript feel."
+      },
+      {
+        "category": "section_divider",
+        "url": "https://images.pexels.com/photos/220745/pexels-photo-220745.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Rustic stone archway casting dramatic shadows. Use for the 'Bibliothèque' (Library) or 'À propos' section backgrounds, darkened aggressively."
+      }
+    ],
+    "treatment": "Images must be darkened and overlaid with #08090C to blend seamlessly into the dark theme. Never use raw bright images."
+  },
+  "testing_attributes": {
+    "rules": "All interactive and key informational elements MUST include a data-testid attribute in kebab-case based on role.",
+    "examples": [
+      "data-testid='prayer-request-submit-button'",
+      "data-testid='donation-stripe-checkout-button'",
+      "data-testid='ai-prayer-generate-button'",
+      "data-testid='member-login-link'",
+      "data-testid='prayer-category-card'"
+    ]
+  },
+  "strict_forbidden": [
+    "Purple or Teal gradients.",
+    "Inter, Roboto, or generic sans-serif fonts for headings.",
+    "Centered generic SaaS card layouts.",
+    "Emoji icons. Use Lucide icons strictly, or custom SVG sacred symbols.",
+    "Bright white backgrounds."
+  ],
+  "copywriting_guidelines": {
+    "language": "FRENCH (Strictly)",
+    "tone": "Sacré, respectueux, intemporel, bienveillant, apaisant."
+  },
+  "instructions_to_main_agent": [
+    "Initialize Tailwind config with the provided color palette and fonts (Cormorant Garamond, EB Garamond, Cinzel). Provide imports from Google Fonts.",
+    "Use Lucide-React for icons, sizing them elegantly (stroke-width: 1.5).",
+    "Build standard Shadcn components but override borders to 0px or 1px sharp, removing standard rounded-md in favor of rounded-none.",
+    "Set up Stripe integration for the 'Dons / Offrandes' page.",
+    "Set up Claude Sonnet 4.5 integration for the AI Prayer Generator feature.",
+    "Set up Resend for email notifications (prayer requests, auth).",
+    "Implement the authentication and member dashboard with premium content gating.",
+    "Ensure all user-facing text is in French."
+  ]
+}
