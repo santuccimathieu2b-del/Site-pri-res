@@ -28,7 +28,7 @@ const Home = () => {
             <div className="divider-ornament mb-12"><Flame size={16} strokeWidth={1.2} className="flicker" /></div>
 
             <p className="font-serif-display text-3xl md:text-5xl text-[var(--ivory)] leading-snug text-center italic">
-              Ce espace n'appartient à aucune <em className="text-[var(--gold)] not-italic">religion</em>.
+              Cet espace n'appartient à aucune <em className="text-[var(--gold)] not-italic">religion</em>.
             </p>
 
             <p className="font-serif-body text-xl md:text-2xl text-[var(--ivory-muted)] leading-relaxed text-center mt-10 reveal-2">
