@@ -33,6 +33,7 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
 JWT_SECRET = os.environ.get('JWT_SECRET', 'change-me')
 JWT_ALGO = 'HS256'
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '').lower().strip()
 
 resend.api_key = RESEND_API_KEY
 
@@ -141,6 +142,7 @@ def to_public_user(doc: dict) -> dict:
         "email": doc["email"],
         "name": doc["name"],
         "is_donor": doc.get("is_donor", False),
+        "is_admin": doc.get("is_admin", False),
         "created_at": doc["created_at"],
     }
 
@@ -170,6 +172,11 @@ async def get_optional_user(
     except Exception:
         return None
 
+async def require_admin(user=Depends(get_current_user)):
+    if not user.get("is_admin"):
+        raise HTTPException(403, "Accès réservé aux gardiens du sanctuaire (admin).")
+    return user
+
 async def send_email_async(to: str, subject: str, html: str):
     if not RESEND_API_KEY or RESEND_API_KEY == "re_placeholder_key":
         logger.info(f"[Email mock - aucune clé Resend valide] Pour: {to} - Sujet: {subject}")
@@ -194,12 +201,15 @@ async def register(payload: UserRegister):
     if existing:
         raise HTTPException(400, "Un compte existe déjà avec cet email.")
     user_id = str(uuid.uuid4())
+    email_lc = payload.email.lower()
+    is_admin = bool(ADMIN_EMAIL and email_lc == ADMIN_EMAIL)
     doc = {
         "id": user_id,
-        "email": payload.email.lower(),
+        "email": email_lc,
         "name": payload.name.strip(),
         "password_hash": hash_password(payload.password),
-        "is_donor": False,
+        "is_donor": is_admin,
+        "is_admin": is_admin,
         "total_donated": 0.0,
         "created_at": now_iso(),
     }
@@ -222,6 +232,14 @@ async def login(payload: UserLogin):
     user = await db.users.find_one({"email": payload.email.lower()})
     if not user or not verify_password(payload.password, user["password_hash"]):
         raise HTTPException(401, "Email ou mot de passe incorrect.")
+    # Idempotent admin upgrade for the configured admin email
+    if ADMIN_EMAIL and user["email"] == ADMIN_EMAIL and not user.get("is_admin"):
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {"is_admin": True, "is_donor": True}},
+        )
+        user["is_admin"] = True
+        user["is_donor"] = True
     token = create_token(user["id"])
     return {"token": token, "user": to_public_user(user)}
 
@@ -283,6 +301,56 @@ async def get_prayer(prayer_id: str, user=Depends(get_optional_user)):
     else:
         prayer["locked"] = False
     return prayer
+
+# ----------- Routes: Admin Prayer Management -----------
+class PrayerCreate(BaseModel):
+    title: str
+    category_slug: Literal["soins", "protection", "exorcisme"]
+    excerpt: str
+    body: str
+    is_premium: bool = False
+
+class PrayerUpdate(BaseModel):
+    title: Optional[str] = None
+    category_slug: Optional[Literal["soins", "protection", "exorcisme"]] = None
+    excerpt: Optional[str] = None
+    body: Optional[str] = None
+    is_premium: Optional[bool] = None
+
+@api_router.post("/admin/prayers")
+async def admin_create_prayer(payload: PrayerCreate, user=Depends(require_admin)):
+    doc = {
+        "id": str(uuid.uuid4()),
+        "title": payload.title.strip(),
+        "category_slug": payload.category_slug,
+        "excerpt": payload.excerpt.strip(),
+        "body": payload.body.strip(),
+        "is_premium": payload.is_premium,
+        "created_at": now_iso(),
+    }
+    await db.prayers.insert_one(doc)
+    return {**{k: v for k, v in doc.items() if k != "_id"}, "locked": False}
+
+@api_router.put("/admin/prayers/{prayer_id}")
+async def admin_update_prayer(prayer_id: str, payload: PrayerUpdate, user=Depends(require_admin)):
+    update = {k: v for k, v in payload.model_dump(exclude_unset=True).items() if v is not None}
+    if not update:
+        raise HTTPException(400, "Aucune modification fournie.")
+    for f in ("title", "excerpt", "body"):
+        if f in update and isinstance(update[f], str):
+            update[f] = update[f].strip()
+    result = await db.prayers.update_one({"id": prayer_id}, {"$set": update})
+    if result.matched_count == 0:
+        raise HTTPException(404, "Prière introuvable")
+    doc = await db.prayers.find_one({"id": prayer_id}, {"_id": 0})
+    return {**doc, "locked": False}
+
+@api_router.delete("/admin/prayers/{prayer_id}")
+async def admin_delete_prayer(prayer_id: str, user=Depends(require_admin)):
+    result = await db.prayers.delete_one({"id": prayer_id})
+    if result.deleted_count == 0:
+        raise HTTPException(404, "Prière introuvable")
+    return {"deleted": prayer_id}
 
 # ----------- Routes: Prayer Requests -----------
 @api_router.post("/prayer-requests")
