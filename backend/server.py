@@ -1,72 +1,629 @@
-from fastapi import FastAPI, APIRouter
+"""Sanctuaire Sacré - Backend API for spiritual prayers platform."""
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import asyncio
 import logging
-from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
 import uuid
-from datetime import datetime, timezone
+import bcrypt
+import jwt
+import resend
+from pathlib import Path
+from pydantic import BaseModel, Field, EmailStr
+from typing import List, Optional, Literal
+from datetime import datetime, timezone, timedelta
 
+from emergentintegrations.payments.stripe.checkout import (
+    StripeCheckout, CheckoutSessionRequest
+)
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Config
+MONGO_URL = os.environ['MONGO_URL']
+DB_NAME = os.environ['DB_NAME']
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', '')
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+JWT_SECRET = os.environ.get('JWT_SECRET', 'change-me')
+JWT_ALGO = 'HS256'
 
-# Create the main app without a prefix
-app = FastAPI()
+resend.api_key = RESEND_API_KEY
 
-# Create a router with the /api prefix
+# DB
+client = AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
+
+# App
+app = FastAPI(title="Sanctuaire Sacré API")
 api_router = APIRouter(prefix="/api")
+security = HTTPBearer(auto_error=False)
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+# ----------- Donation packages (server-defined to prevent tampering) -----------
+DONATION_PACKAGES = {
+    "lueur": {"amount": 7.0, "currency": "eur", "label": "Lueur de Lumière"},
+    "cierge": {"amount": 21.0, "currency": "eur", "label": "Cierge Béni"},
+    "sanctuaire": {"amount": 49.0, "currency": "eur", "label": "Offrande du Sanctuaire"},
+    "gardien": {"amount": 108.0, "currency": "eur", "label": "Gardien des Âmes"},
+}
+DONOR_THRESHOLD = 21.0  # any donation >= grants donor status
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+# ----------- Models -----------
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6)
+    name: str
 
-# Add your routes to the router instead of directly to app
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserPublic(BaseModel):
+    id: str
+    email: EmailStr
+    name: str
+    is_donor: bool
+    created_at: str
+
+class PrayerCategory(BaseModel):
+    id: str
+    slug: str
+    name: str
+    description: str
+    icon: str
+
+class Prayer(BaseModel):
+    id: str
+    title: str
+    category_slug: Literal["soins", "protection", "exorcisme"]
+    excerpt: str
+    body: str
+    is_premium: bool
+    created_at: str
+
+class PrayerRequestCreate(BaseModel):
+    name: str
+    email: EmailStr
+    category: Literal["soins", "protection", "exorcisme"]
+    intention: str
+
+class PrayerRequest(BaseModel):
+    id: str
+    name: str
+    email: EmailStr
+    category: str
+    intention: str
+    user_id: Optional[str] = None
+    created_at: str
+
+class AIPrayerRequest(BaseModel):
+    intention: str
+    category: Literal["soins", "protection", "exorcisme"]
+    tone: Literal["doux", "puissant", "intime"] = "doux"
+
+class CheckoutCreateRequest(BaseModel):
+    package_id: str
+    origin_url: str
+
+# ----------- Helpers -----------
+def hash_password(pw: str) -> str:
+    return bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
+
+def verify_password(pw: str, hashed: str) -> bool:
+    try:
+        return bcrypt.checkpw(pw.encode(), hashed.encode())
+    except Exception:
+        return False
+
+def create_token(user_id: str) -> str:
+    payload = {
+        "sub": user_id,
+        "iat": datetime.now(timezone.utc),
+        "exp": datetime.now(timezone.utc) + timedelta(days=30),
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGO)
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+def to_public_user(doc: dict) -> dict:
+    return {
+        "id": doc["id"],
+        "email": doc["email"],
+        "name": doc["name"],
+        "is_donor": doc.get("is_donor", False),
+        "created_at": doc["created_at"],
+    }
+
+async def get_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+):
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Authentification requise")
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGO])
+        user_id = payload.get("sub")
+        user = await db.users.find_one({"id": user_id}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=401, detail="Utilisateur introuvable")
+        return user
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Jeton invalide")
+
+async def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+):
+    if not credentials:
+        return None
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGO])
+        return await db.users.find_one({"id": payload.get("sub")}, {"_id": 0})
+    except Exception:
+        return None
+
+async def send_email_async(to: str, subject: str, html: str):
+    if not RESEND_API_KEY or RESEND_API_KEY == "re_placeholder_key":
+        logger.info(f"[Email mock - aucune clé Resend valide] Pour: {to} - Sujet: {subject}")
+        return {"status": "mocked", "to": to}
+    try:
+        params = {"from": SENDER_EMAIL, "to": [to], "subject": subject, "html": html}
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        return {"status": "sent", "id": result.get("id")}
+    except Exception as e:
+        logger.error(f"Email send failed: {e}")
+        return {"status": "error", "error": str(e)}
+
+# ----------- Routes: Health -----------
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Sanctuaire Sacré API", "status": "ok"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+# ----------- Routes: Auth -----------
+@api_router.post("/auth/register")
+async def register(payload: UserRegister):
+    existing = await db.users.find_one({"email": payload.email.lower()})
+    if existing:
+        raise HTTPException(400, "Un compte existe déjà avec cet email.")
+    user_id = str(uuid.uuid4())
+    doc = {
+        "id": user_id,
+        "email": payload.email.lower(),
+        "name": payload.name.strip(),
+        "password_hash": hash_password(payload.password),
+        "is_donor": False,
+        "total_donated": 0.0,
+        "created_at": now_iso(),
+    }
+    await db.users.insert_one(doc)
+    token = create_token(user_id)
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+    # welcome email (async, best-effort)
+    asyncio.create_task(send_email_async(
+        doc["email"],
+        "Bienvenue au Sanctuaire Sacré",
+        f"<div style='font-family:Georgia,serif;background:#08090C;color:#F4ECD8;padding:32px;'>"
+        f"<h1 style='color:#D4AF37;font-weight:300;'>Bienvenue, {doc['name']}</h1>"
+        f"<p>Votre âme rejoint notre cercle de lumière. Que la paix vous accompagne.</p>"
+        f"<p style='color:#C8BAA1;'>— Sanctuaire Sacré</p></div>"
+    ))
+    return {"token": token, "user": to_public_user(doc)}
 
-# Include the router in the main app
+@api_router.post("/auth/login")
+async def login(payload: UserLogin):
+    user = await db.users.find_one({"email": payload.email.lower()})
+    if not user or not verify_password(payload.password, user["password_hash"]):
+        raise HTTPException(401, "Email ou mot de passe incorrect.")
+    token = create_token(user["id"])
+    return {"token": token, "user": to_public_user(user)}
+
+@api_router.get("/auth/me")
+async def me(user=Depends(get_current_user)):
+    return to_public_user(user)
+
+# ----------- Routes: Categories & Prayers -----------
+CATEGORIES = [
+    {
+        "id": "cat-soins", "slug": "soins", "name": "Prières de Soins",
+        "description": "Pour la guérison du corps, de l'esprit et de l'âme.",
+        "icon": "heart-pulse",
+    },
+    {
+        "id": "cat-protection", "slug": "protection", "name": "Prières de Protection",
+        "description": "Bouclier sacré contre les énergies négatives et les influences malveillantes.",
+        "icon": "shield",
+    },
+    {
+        "id": "cat-exorcisme", "slug": "exorcisme", "name": "Prières d'Exorcisme",
+        "description": "Libération des entités obscures et purification spirituelle profonde.",
+        "icon": "flame",
+    },
+]
+
+@api_router.get("/categories", response_model=List[PrayerCategory])
+async def get_categories():
+    return CATEGORIES
+
+@api_router.get("/prayers")
+async def list_prayers(
+    category: Optional[str] = None,
+    user=Depends(get_optional_user),
+):
+    query = {}
+    if category:
+        query["category_slug"] = category
+    prayers = await db.prayers.find(query, {"_id": 0}).to_list(500)
+    is_donor = bool(user and user.get("is_donor"))
+    # mask premium body for non-donors
+    for p in prayers:
+        if p.get("is_premium") and not is_donor:
+            p["body"] = ""
+            p["locked"] = True
+        else:
+            p["locked"] = False
+    return prayers
+
+@api_router.get("/prayers/{prayer_id}")
+async def get_prayer(prayer_id: str, user=Depends(get_optional_user)):
+    prayer = await db.prayers.find_one({"id": prayer_id}, {"_id": 0})
+    if not prayer:
+        raise HTTPException(404, "Prière introuvable")
+    is_donor = bool(user and user.get("is_donor"))
+    if prayer.get("is_premium") and not is_donor:
+        prayer["body"] = ""
+        prayer["locked"] = True
+    else:
+        prayer["locked"] = False
+    return prayer
+
+# ----------- Routes: Prayer Requests -----------
+@api_router.post("/prayer-requests")
+async def create_prayer_request(
+    payload: PrayerRequestCreate,
+    user=Depends(get_optional_user),
+):
+    req_id = str(uuid.uuid4())
+    doc = {
+        "id": req_id,
+        "name": payload.name.strip(),
+        "email": payload.email.lower(),
+        "category": payload.category,
+        "intention": payload.intention.strip(),
+        "user_id": user["id"] if user else None,
+        "created_at": now_iso(),
+    }
+    await db.prayer_requests.insert_one(doc)
+
+    asyncio.create_task(send_email_async(
+        doc["email"],
+        "Votre demande de prière a été reçue",
+        f"<div style='font-family:Georgia,serif;background:#08090C;color:#F4ECD8;padding:32px;'>"
+        f"<h1 style='color:#D4AF37;font-weight:300;'>Votre intention est entendue</h1>"
+        f"<p>Cher(e) {doc['name']},</p>"
+        f"<p>Votre demande de prière pour <em>{doc['category']}</em> a été reçue avec recueillement. "
+        f"Nos prières s'élèvent désormais avec votre intention.</p>"
+        f"<blockquote style='border-left:2px solid #D4AF37;padding-left:16px;color:#C8BAA1;'>"
+        f"{doc['intention']}</blockquote>"
+        f"<p style='color:#C8BAA1;'>— Sanctuaire Sacré</p></div>"
+    ))
+
+    return {"id": req_id, "message": "Demande reçue. Votre intention est entre nos mains."}
+
+@api_router.get("/prayer-requests/mine")
+async def my_requests(user=Depends(get_current_user)):
+    items = await db.prayer_requests.find({"user_id": user["id"]}, {"_id": 0}).sort("created_at", -1).to_list(200)
+    return items
+
+# ----------- Routes: AI Prayer Generation (members + donors only) -----------
+@api_router.post("/ai/generate-prayer")
+async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_user)):
+    if not user.get("is_donor"):
+        raise HTTPException(403, "Cette fonctionnalité est réservée aux membres donateurs.")
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(500, "Service IA indisponible.")
+
+    system_msg = (
+        "Tu es un guide spirituel non-confessionnel, érudit en traditions mystiques universelles. "
+        "Tu composes des prières en français, dans un style sacré, poétique, intemporel, "
+        "inspirées des manuscrits anciens. Tu n'utilises pas d'émojis. "
+        "Tu réponds UNIQUEMENT par la prière demandée, sans préambule ni explication, "
+        "structurée en versets courts, avec une invocation initiale et une bénédiction finale."
+    )
+    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme"}[payload.category]
+    tone_hint = {
+        "doux": "Ton apaisant, doux, contemplatif.",
+        "puissant": "Ton ferme, résolu, lumineux et puissant.",
+        "intime": "Ton intime, personnel, comme une confidence à la Source.",
+    }[payload.tone]
+    user_msg = (
+        f"Compose une prière de {category_label}. {tone_hint}\n"
+        f"Intention de la personne : {payload.intention}\n"
+        f"Longueur : 8 à 14 versets."
+    )
+
+    chat = LlmChat(
+        api_key=EMERGENT_LLM_KEY,
+        session_id=f"prayer-{user['id']}-{uuid.uuid4().hex[:8]}",
+        system_message=system_msg,
+    ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+
+    try:
+        result = await chat.send_message(UserMessage(text=user_msg))
+        text = result if isinstance(result, str) else getattr(result, "text", str(result))
+    except Exception as e:
+        logger.error(f"AI generation failed: {e}")
+        raise HTTPException(500, "La composition de la prière a échoué.")
+
+    # store
+    doc = {
+        "id": str(uuid.uuid4()),
+        "user_id": user["id"],
+        "category": payload.category,
+        "tone": payload.tone,
+        "intention": payload.intention,
+        "prayer_text": text,
+        "created_at": now_iso(),
+    }
+    await db.ai_prayers.insert_one(doc)
+    return {"id": doc["id"], "prayer": text, "category": payload.category, "tone": payload.tone}
+
+@api_router.get("/ai/my-prayers")
+async def my_ai_prayers(user=Depends(get_current_user)):
+    items = await db.ai_prayers.find({"user_id": user["id"]}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return items
+
+# ----------- Routes: Stripe Donations -----------
+@api_router.get("/donations/packages")
+async def get_packages():
+    return [{"id": k, **v} for k, v in DONATION_PACKAGES.items()]
+
+@api_router.post("/donations/checkout")
+async def create_checkout(payload: CheckoutCreateRequest, http_request: Request, user=Depends(get_optional_user)):
+    pkg = DONATION_PACKAGES.get(payload.package_id)
+    if not pkg:
+        raise HTTPException(400, "Offrande inconnue.")
+    origin = payload.origin_url.rstrip("/")
+    success_url = f"{origin}/dons/merci?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin}/dons"
+
+    host_url = str(http_request.base_url)
+    webhook_url = f"{host_url}api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+
+    metadata = {
+        "source": "sanctuaire_sacre",
+        "package_id": payload.package_id,
+    }
+    if user:
+        metadata["user_id"] = user["id"]
+        metadata["user_email"] = user["email"]
+
+    req = CheckoutSessionRequest(
+        amount=float(pkg["amount"]),
+        currency=pkg["currency"],
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata=metadata,
+    )
+    session = await stripe_checkout.create_checkout_session(req)
+
+    tx = {
+        "id": str(uuid.uuid4()),
+        "session_id": session.session_id,
+        "user_id": user["id"] if user else None,
+        "user_email": user["email"] if user else None,
+        "package_id": payload.package_id,
+        "amount": float(pkg["amount"]),
+        "currency": pkg["currency"],
+        "metadata": metadata,
+        "payment_status": "pending",
+        "status": "initiated",
+        "processed": False,
+        "created_at": now_iso(),
+    }
+    await db.payment_transactions.insert_one(tx)
+    return {"url": session.url, "session_id": session.session_id}
+
+@api_router.get("/donations/status/{session_id}")
+async def donation_status(session_id: str):
+    tx = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    if not tx:
+        raise HTTPException(404, "Transaction introuvable.")
+
+    if tx.get("processed"):
+        return {
+            "payment_status": tx["payment_status"],
+            "status": tx["status"],
+            "amount": tx["amount"],
+            "currency": tx["currency"],
+            "package_id": tx["package_id"],
+        }
+
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+    try:
+        result = await stripe_checkout.get_checkout_status(session_id)
+    except Exception as e:
+        logger.error(f"Status check failed: {e}")
+        raise HTTPException(500, "Vérification impossible.")
+
+    update = {
+        "payment_status": result.payment_status,
+        "status": result.status,
+    }
+
+    if result.payment_status == "paid" and not tx.get("processed"):
+        update["processed"] = True
+        update["paid_at"] = now_iso()
+        # Grant donor status
+        user_id = tx.get("user_id")
+        if user_id:
+            await db.users.update_one(
+                {"id": user_id},
+                {"$inc": {"total_donated": tx["amount"]}, "$set": {"is_donor": True}}
+            )
+        # Send thank you email
+        email_to = tx.get("user_email") or (tx.get("metadata") or {}).get("user_email")
+        if email_to:
+            asyncio.create_task(send_email_async(
+                email_to,
+                "Merci pour votre offrande sacrée",
+                f"<div style='font-family:Georgia,serif;background:#08090C;color:#F4ECD8;padding:32px;'>"
+                f"<h1 style='color:#D4AF37;font-weight:300;'>Votre lumière éclaire le Sanctuaire</h1>"
+                f"<p>Votre offrande de {tx['amount']} {tx['currency'].upper()} a été reçue avec gratitude.</p>"
+                f"<p>Votre accès aux prières sacrées réservées est désormais ouvert.</p>"
+                f"<p style='color:#C8BAA1;'>— Sanctuaire Sacré</p></div>"
+            ))
+
+    await db.payment_transactions.update_one({"session_id": session_id}, {"$set": update})
+    tx = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    return {
+        "payment_status": tx["payment_status"],
+        "status": tx["status"],
+        "amount": tx["amount"],
+        "currency": tx["currency"],
+        "package_id": tx["package_id"],
+    }
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    body = await request.body()
+    signature = request.headers.get("Stripe-Signature", "")
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+    try:
+        event = await stripe_checkout.handle_webhook(body, signature)
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        raise HTTPException(400, "Webhook invalide")
+
+    if event.session_id:
+        tx = await db.payment_transactions.find_one({"session_id": event.session_id})
+        if tx and not tx.get("processed") and event.payment_status == "paid":
+            await db.payment_transactions.update_one(
+                {"session_id": event.session_id},
+                {"$set": {
+                    "payment_status": event.payment_status,
+                    "status": "completed",
+                    "processed": True,
+                    "paid_at": now_iso(),
+                }},
+            )
+            user_id = tx.get("user_id")
+            if user_id:
+                await db.users.update_one(
+                    {"id": user_id},
+                    {"$inc": {"total_donated": tx["amount"]}, "$set": {"is_donor": True}}
+                )
+    return {"received": True}
+
+# ----------- Testimonies -----------
+TESTIMONIES = [
+    {
+        "id": "t1", "name": "Marie L.", "city": "Lyon",
+        "text": "Après des semaines d'angoisses inexpliquées, la prière de protection m'a redonné la paix. Je ne peux décrire ce qui s'est dénoué en moi.",
+        "category": "protection",
+    },
+    {
+        "id": "t2", "name": "Étienne D.", "city": "Bordeaux",
+        "text": "J'ai prié chaque soir avec les versets de soins pendant ma convalescence. Quelque chose d'invisible m'a porté jusqu'à la guérison.",
+        "category": "soins",
+    },
+    {
+        "id": "t3", "name": "Soraya B.", "city": "Marseille",
+        "text": "Le rituel d'exorcisme léger nous a délivrés d'une présence qui hantait notre demeure depuis l'héritage de ma grand-mère. Tout est apaisé désormais.",
+        "category": "exorcisme",
+    },
+    {
+        "id": "t4", "name": "Anonyme", "city": "Genève",
+        "text": "La prière personnalisée générée pour mon père mourant lui a offert le départ le plus doux. Merci infiniment.",
+        "category": "soins",
+    },
+]
+
+@api_router.get("/testimonies")
+async def get_testimonies():
+    return TESTIMONIES
+
+# ----------- Seeding -----------
+@api_router.post("/admin/seed")
+async def seed():
+    """Idempotent seed of prayers."""
+    existing = await db.prayers.count_documents({})
+    if existing >= 12:
+        return {"status": "already_seeded", "count": existing}
+
+    seed_prayers = [
+        # Soins
+        {"title": "Invocation de la Lumière Guérisseuse", "category_slug": "soins",
+         "excerpt": "Pour ouvrir le cœur à la guérison intérieure et apaiser les douleurs anciennes.",
+         "body": "Ô Source de toute lumière,\n\nDescends sur ce corps fatigué,\nTraverse ces veines blessées,\nDissous ce qui pèse sur l'âme.\n\nQue chaque souffle devienne baume,\nQue chaque battement devienne prière.\nQue la paix s'installe où régnait la douleur,\nEt que la vie retrouve sa source claire.\n\nJe me confie. Je me dépose. Je guéris.",
+         "is_premium": False},
+        {"title": "Litanie du Corps Restauré", "category_slug": "soins",
+         "excerpt": "Pour la convalescence et la régénération profonde des cellules.",
+         "body": "Que mes os retrouvent leur force,\nQue mon sang retrouve son chant,\nQue ma chair se renouvelle.\n\nÔ Présence invisible et bienveillante,\nTisse à nouveau ce qui s'est défait,\nApaise ce qui brûle,\nÉteins ce qui consume.\n\nJe suis vivant. Je suis aimé. Je suis restauré.",
+         "is_premium": True},
+        {"title": "Oraison du Cœur Brisé", "category_slug": "soins",
+         "excerpt": "Pour traverser les deuils et les peines de l'âme.",
+         "body": "Sur ce cœur fissuré,\nDépose ta main de soie.\nDans cette nuit du dedans,\nAllume une seule étoile.\n\nJe pleure, et tu m'entends.\nJe tombe, et tu me reçois.\nJe me brise, et tu me recomposes.",
+         "is_premium": False},
+        {"title": "Bénédiction des Enfants Malades", "category_slug": "soins",
+         "excerpt": "Une prière douce pour les âmes innocentes qui souffrent.",
+         "body": "Sur cette petite tête, dépose ta paix.\nSur ces petites mains, mets ta force.\nSur ce petit cœur, verse ta tendresse.\n\nQue l'ange du soin veille sur ce sommeil,\nQue la lumière du jour ramène le sourire.",
+         "is_premium": True},
+
+        # Protection
+        {"title": "Bouclier des Sept Lumières", "category_slug": "protection",
+         "excerpt": "Pour ériger un rempart sacré autour de soi et de ses proches.",
+         "body": "Que sept lumières m'entourent :\nDevant moi, la clarté.\nDerrière moi, la vigilance.\nÀ ma droite, la force.\nÀ ma gauche, la sagesse.\nAu-dessus de moi, la grâce.\nEn dessous de moi, la stabilité.\nEn moi, la paix.\n\nAucune ombre ne franchira ce cercle.",
+         "is_premium": False},
+        {"title": "Prière de Scellement du Foyer", "category_slug": "protection",
+         "excerpt": "Pour bénir et protéger la maison contre toute énergie malveillante.",
+         "body": "Aux quatre coins de cette demeure,\nJe dépose une flamme invisible.\nAux portes, je trace un signe d'or.\nAux fenêtres, je murmure un nom sacré.\n\nQue rien d'impur n'entre ici.\nQue rien d'obscur n'y demeure.\nQue cette maison soit temple et refuge.",
+         "is_premium": True},
+        {"title": "Invocation contre les Mauvais Regards", "category_slug": "protection",
+         "excerpt": "Pour dissiper les jalousies et les intentions néfastes.",
+         "body": "Que les yeux qui me veulent du mal\nSe détournent et s'apaisent.\nQue les paroles tissées contre moi\nRetournent à leur source sans m'atteindre.\n\nJe suis enveloppé d'une lumière douce et ferme.\nJe marche dans la paix.",
+         "is_premium": False},
+        {"title": "Garde des Voyageurs", "category_slug": "protection",
+         "excerpt": "Pour les déplacements, les voyages et les chemins incertains.",
+         "body": "Que la route s'ouvre devant moi sans embûche.\nQue les vents me soient favorables.\nQue les routes me ramènent à bon port.\n\nJe ne marche pas seul. Une main invisible me guide.",
+         "is_premium": True},
+
+        # Exorcisme
+        {"title": "Litanie de Libération Légère", "category_slug": "exorcisme",
+         "excerpt": "Pour la purification des espaces et des âmes troublées par des présences fines.",
+         "body": "Toi qui n'as pas ta place ici,\nRetourne à la lumière qui t'attend.\n\nCe lieu n'est pas le tien.\nCette âme n'est pas la tienne.\nCe corps n'est pas le tien.\n\nPar la force de la Source,\nPar la flamme qui purifie,\nPar le nom qui ne se nomme pas,\nQuitte. Pars. Sois libéré.",
+         "is_premium": False},
+        {"title": "Grande Oraison de Délivrance", "category_slug": "exorcisme",
+         "excerpt": "Rituel sacré pour les âmes captives d'attaches anciennes.",
+         "body": "Ô Force des Origines,\nDescends en cet instant,\nTranche les liens invisibles,\nDélie les nœuds anciens.\n\nQue tombent les chaînes,\nQue se brisent les sceaux,\nQue s'ouvrent les cachots de l'âme.\n\nJe te rends ta liberté.\nJe te rends ta lumière.\nJe te rends à toi-même.",
+         "is_premium": True},
+        {"title": "Purification des Objets", "category_slug": "exorcisme",
+         "excerpt": "Pour nettoyer un héritage, un bijou, un meuble chargé d'énergies.",
+         "body": "Sur cet objet je pose mes mains.\nJe le lave de toute mémoire pesante.\nJe le rends à sa pureté première.\n\nQue tout ce qui s'y est accroché\nRetourne au néant ou à la lumière.",
+         "is_premium": False},
+        {"title": "Bannissement des Cauchemars", "category_slug": "exorcisme",
+         "excerpt": "Pour les nuits troublées par des présences ou des visions.",
+         "body": "Que les nuits redeviennent douces.\nQue les rêves redeviennent purs.\nQue rien ne vienne hanter ce sommeil.\n\nUn ange veille au pied du lit.\nUn ange veille à la tête.\nJe dors. Je suis en paix.",
+         "is_premium": True},
+    ]
+
+    for p in seed_prayers:
+        await db.prayers.insert_one({
+            "id": str(uuid.uuid4()),
+            **p,
+            "created_at": now_iso(),
+        })
+    return {"status": "seeded", "count": len(seed_prayers)}
+
+# Include router
 app.include_router(api_router)
 
 app.add_middleware(
@@ -77,12 +634,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+@app.on_event("startup")
+async def startup():
+    # auto-seed prayers if empty
+    count = await db.prayers.count_documents({})
+    if count == 0:
+        logger.info("Seeding prayers on startup...")
+        try:
+            # call directly
+            from fastapi.testclient import TestClient  # noqa
+        except Exception:
+            pass
+        # invoke seed
+        await seed()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
