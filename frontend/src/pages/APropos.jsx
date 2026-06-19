@@ -12,10 +12,9 @@ const APropos = () => (
 
     <article className="font-serif-body text-lg text-[var(--ivory-muted)] leading-loose space-y-6">
       <p className="initial-letter">
-        Espace Sacré est né d'une certitude simple&nbsp;: la prière n'appartient à aucune religion en particulier.
-        Elle appartient à celui qui prie. Depuis les hymnes des Védas jusqu'aux invocations égyptiennes, depuis les
-        psaumes hébraïques jusqu'aux mantras bouddhistes, chaque tradition a posé sur le monde une parole de paix,
-        de soin, de protection.
+        Cet espace est né d'une certitude simple&nbsp;: la prière n'appartient à aucune religion en particulier.
+        Elle appartient à celui qui prie. Des premières pratiques préhistoriques aux origines ésotériques de
+        Mésopotamie ou d'Égypte, chaque tradition a posé sur le monde une parole de paix, de soin, de protection.
       </p>
       <p>
         Notre vocation est de recueillir, de transmettre, et d'écrire. De recueillir ce que les âges nous ont confié.
