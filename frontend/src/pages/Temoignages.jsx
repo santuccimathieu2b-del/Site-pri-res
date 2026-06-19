@@ -8,13 +8,11 @@ const Temoignages = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-6 lg:px-10 py-20" data-testid="temoignages-page">
-      <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Voix des âmes</p>
       <h1 className="font-serif-display text-5xl md:text-6xl text-[var(--ivory)] leading-tight mb-6">
-        <em className="text-[var(--gold)]">Témoignages</em> des chemins traversés
+        <em className="text-[var(--gold)]">Témoignages</em>
       </h1>
       <p className="font-serif-body text-lg text-[var(--ivory-muted)] max-w-2xl mb-16">
-        Ces voix se sont confiées à nous. Avec leur accord, elles sont déposées ici pour vous, qui peut-être
-        commencez le même chemin.
+        N'hésitez pas à témoigner ou à nous faire partager vos expériences.
       </p>
 
       {items.length === 0 ? (
