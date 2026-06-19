@@ -32,9 +32,7 @@ const Abonnement = () => {
 
   const benefits = [
     "Accès illimité et à vie à toutes les prières du site, sans restriction",
-    "Composition d'oraisons personnelles par notre guide intérieur",
     "Toutes les futures prières et pratiques ajoutées incluses",
-    "Soutien direct à la pérennité de l'Espace Sacré",
   ];
 
   return (
