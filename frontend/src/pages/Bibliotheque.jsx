@@ -240,7 +240,7 @@ const Bibliotheque = () => {
                     className={`py-3 font-engraved text-[10px] transition ${form.category_slug === c ? "bg-[var(--bordeaux)] text-[var(--ivory)]" : "bg-[rgba(17,19,26,0.8)] text-[var(--ivory-muted)] hover:text-[var(--gold)]"}`}
                     data-testid={`admin-cat-${c}`}
                   >
-                    {c === "esoterisme" ? "ésotérisme" : c}
+                    {c === "esoterisme" ? "rituels" : c}
                   </button>
                 ))}
               </div>

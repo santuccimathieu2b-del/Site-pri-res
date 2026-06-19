@@ -262,8 +262,8 @@ CATEGORIES = [
         "icon": "flame",
     },
     {
-        "id": "cat-esoterisme", "slug": "esoterisme", "name": "Pratiques Ésotériques",
-        "description": "Rituels, symboles et pratiques mystiques pour explorer les voies subtiles.",
+        "id": "cat-esoterisme", "slug": "esoterisme", "name": "Rituels et matériel",
+        "description": "Rituels, objets sacrés et pratiques mystiques pour explorer les voies subtiles.",
         "icon": "sparkles",
     },
 ]
@@ -407,7 +407,7 @@ async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_use
         "Tu réponds UNIQUEMENT par la prière demandée, sans préambule ni explication, "
         "structurée en versets courts, avec une invocation initiale et une bénédiction finale."
     )
-    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme", "esoterisme": "pratique ésotérique mystique"}[payload.category]
+    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme", "esoterisme": "rituel et matériel mystique"}[payload.category]
     tone_hint = {
         "doux": "Ton apaisant, doux, contemplatif.",
         "puissant": "Ton ferme, résolu, lumineux et puissant.",
