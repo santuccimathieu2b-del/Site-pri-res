@@ -2,10 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { HeartPulse, Shield, Flame, Lock, ScrollText, Plus, Pencil, Trash2, X } from "lucide-react";
+import { HeartPulse, Shield, Flame, Sparkles as SparklesIcon, Lock, ScrollText, Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
-const ICONS = { soins: HeartPulse, protection: Shield, exorcisme: Flame };
+const ICONS = { soins: HeartPulse, protection: Shield, exorcisme: Flame, esoterisme: SparklesIcon };
 
 const emptyForm = { title: "", category_slug: "soins", excerpt: "", body: "", is_premium: false };
 
@@ -231,8 +231,8 @@ const Bibliotheque = () => {
 
             <div>
               <label className="font-engraved text-[10px] text-[var(--gold)] block mb-2">Catégorie</label>
-              <div className="grid grid-cols-3 gap-px bg-[rgba(212,175,55,0.15)]">
-                {["soins", "protection", "exorcisme"].map((c) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[rgba(212,175,55,0.15)]">
+                {["soins", "protection", "exorcisme", "esoterisme"].map((c) => (
                   <button
                     type="button"
                     key={c}
@@ -240,7 +240,7 @@ const Bibliotheque = () => {
                     className={`py-3 font-engraved text-[10px] transition ${form.category_slug === c ? "bg-[var(--bordeaux)] text-[var(--ivory)]" : "bg-[rgba(17,19,26,0.8)] text-[var(--ivory-muted)] hover:text-[var(--gold)]"}`}
                     data-testid={`admin-cat-${c}`}
                   >
-                    {c}
+                    {c === "esoterisme" ? "ésotérisme" : c}
                   </button>
                 ))}
               </div>

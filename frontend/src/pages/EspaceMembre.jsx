@@ -82,8 +82,8 @@ const EspaceMembre = () => {
             </div>
           ) : (
             <form onSubmit={generate} className="space-y-5">
-              <div className="grid grid-cols-3 gap-px bg-[rgba(212,175,55,0.15)]">
-                {["soins", "protection", "exorcisme"].map((c) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[rgba(212,175,55,0.15)]">
+                {["soins", "protection", "exorcisme", "esoterisme"].map((c) => (
                   <button
                     type="button"
                     key={c}
@@ -91,7 +91,7 @@ const EspaceMembre = () => {
                     className={`py-3 font-engraved text-[10px] transition ${aiForm.category === c ? "bg-[var(--bordeaux)] text-[var(--ivory)]" : "bg-[rgba(17,19,26,0.8)] text-[var(--ivory-muted)] hover:text-[var(--gold)]"}`}
                     data-testid={`ai-cat-${c}`}
                   >
-                    {c}
+                    {c === "esoterisme" ? "ésotérisme" : c}
                   </button>
                 ))}
               </div>

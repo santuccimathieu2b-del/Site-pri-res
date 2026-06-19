@@ -76,8 +76,8 @@ const Demande = () => {
 
           <div>
             <label className="font-engraved text-[10px] text-[var(--gold)] block mb-2">Type de prière</label>
-            <div className="grid grid-cols-3 gap-px bg-[rgba(212,175,55,0.15)]">
-              {["soins", "protection", "exorcisme"].map((c) => (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[rgba(212,175,55,0.15)]">
+              {["soins", "protection", "exorcisme", "esoterisme"].map((c) => (
                 <button
                   type="button"
                   key={c}
@@ -85,7 +85,7 @@ const Demande = () => {
                   className={`py-4 font-engraved text-[10px] transition ${form.category === c ? "bg-[var(--bordeaux)] text-[var(--ivory)]" : "bg-[rgba(17,19,26,0.8)] text-[var(--ivory-muted)] hover:text-[var(--gold)]"}`}
                   data-testid={`demande-cat-${c}`}
                 >
-                  {c}
+                  {c === "esoterisme" ? "ésotérisme" : c}
                 </button>
               ))}
             </div>

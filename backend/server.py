@@ -105,7 +105,7 @@ class PrayerRequest(BaseModel):
 
 class AIPrayerRequest(BaseModel):
     intention: str
-    category: Literal["soins", "protection", "exorcisme"]
+    category: Literal["soins", "protection", "exorcisme", "esoterisme"]
     tone: Literal["doux", "puissant", "intime"] = "doux"
 
 class CheckoutCreateRequest(BaseModel):
@@ -261,6 +261,11 @@ CATEGORIES = [
         "description": "Libération des entités obscures et purification spirituelle profonde.",
         "icon": "flame",
     },
+    {
+        "id": "cat-esoterisme", "slug": "esoterisme", "name": "Pratiques Ésotériques",
+        "description": "Rituels, symboles et pratiques mystiques pour explorer les voies subtiles.",
+        "icon": "sparkles",
+    },
 ]
 
 @api_router.get("/categories", response_model=List[PrayerCategory])
@@ -302,14 +307,14 @@ async def get_prayer(prayer_id: str, user=Depends(get_optional_user)):
 # ----------- Routes: Admin Prayer Management -----------
 class PrayerCreate(BaseModel):
     title: str
-    category_slug: Literal["soins", "protection", "exorcisme"]
+    category_slug: Literal["soins", "protection", "exorcisme", "esoterisme"]
     excerpt: str
     body: str
     is_premium: bool = False
 
 class PrayerUpdate(BaseModel):
     title: Optional[str] = None
-    category_slug: Optional[Literal["soins", "protection", "exorcisme"]] = None
+    category_slug: Optional[Literal["soins", "protection", "exorcisme", "esoterisme"]] = None
     excerpt: Optional[str] = None
     body: Optional[str] = None
     is_premium: Optional[bool] = None
@@ -402,7 +407,7 @@ async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_use
         "Tu réponds UNIQUEMENT par la prière demandée, sans préambule ni explication, "
         "structurée en versets courts, avec une invocation initiale et une bénédiction finale."
     )
-    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme"}[payload.category]
+    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme", "esoterisme": "pratique ésotérique mystique"}[payload.category]
     tone_hint = {
         "doux": "Ton apaisant, doux, contemplatif.",
         "puissant": "Ton ferme, résolu, lumineux et puissant.",
