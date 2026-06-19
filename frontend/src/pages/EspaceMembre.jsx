@@ -58,8 +58,8 @@ const EspaceMembre = () => {
           </p>
         </div>
         {!user.is_donor && (
-          <Link to="/dons" className="btn-sacred btn-sacred-filled sharp" data-testid="become-donor-cta">
-            Devenir gardien
+          <Link to="/abonnement" className="btn-sacred btn-sacred-filled sharp" data-testid="become-donor-cta">
+            S'abonner
           </Link>
         )}
       </div>
@@ -78,7 +78,7 @@ const EspaceMembre = () => {
               <p className="font-serif-body text-[var(--ivory-muted)] mb-6">
                 La composition d'oraisons personnelles est réservée aux gardiens du espace.
               </p>
-              <Link to="/dons" className="btn-sacred sharp" data-testid="ai-locked-cta">Devenir gardien</Link>
+              <Link to="/abonnement" className="btn-sacred sharp" data-testid="ai-locked-cta">S'abonner</Link>
             </div>
           ) : (
             <form onSubmit={generate} className="space-y-5">

@@ -59,12 +59,12 @@ const DonsMerci = () => {
             Merci infiniment.
           </h1>
           <p className="font-serif-body text-lg text-[var(--ivory-muted)] mb-8 leading-relaxed">
-            Votre offrande de {status.data?.amount} {status.data?.currency?.toUpperCase()} a été reçue. Votre âme rejoint
-            le cercle des gardiens du espace. Une confirmation vous a été envoyée.
+            Votre abonnement de {status.data?.amount} {status.data?.currency?.toUpperCase()} a été activé. L'ensemble
+            de l'Espace vous est désormais ouvert. Une confirmation vous a été envoyée par courriel.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link to="/bibliotheque" className="btn-sacred sharp" data-testid="merci-cta-library">
-              Accéder aux prières sacrées
+              Accéder à toutes les prières
             </Link>
             <Link to="/espace-membre" className="btn-sacred btn-sacred-filled sharp" data-testid="merci-cta-member">
               Mon espace
@@ -74,7 +74,7 @@ const DonsMerci = () => {
       )}
       {status.state === "pending" && (
         <>
-          <h1 className="font-serif-display text-4xl text-[var(--ivory)] mb-4">Votre offrande est en cours…</h1>
+          <h1 className="font-serif-display text-4xl text-[var(--ivory)] mb-4">Votre abonnement est en cours…</h1>
           <p className="font-serif-body text-[var(--ivory-muted)]">
             La confirmation peut prendre quelques instants. Vous recevrez un courriel dès qu'elle sera complète.
           </p>
@@ -82,9 +82,9 @@ const DonsMerci = () => {
       )}
       {(status.state === "expired" || status.state === "error") && (
         <>
-          <h1 className="font-serif-display text-4xl text-[var(--ivory)] mb-4">L'offrande n'a pu aboutir.</h1>
+          <h1 className="font-serif-display text-4xl text-[var(--ivory)] mb-4">L'abonnement n'a pu aboutir.</h1>
           <p className="font-serif-body text-[var(--ivory-muted)] mb-8">Vous pouvez reprendre le chemin quand vous le souhaitez.</p>
-          <Link to="/dons" className="btn-sacred sharp">Retourner aux offrandes</Link>
+          <Link to="/abonnement" className="btn-sacred sharp">Retourner à l'abonnement</Link>
         </>
       )}
     </div>

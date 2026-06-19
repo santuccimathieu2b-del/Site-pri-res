@@ -7,7 +7,7 @@ const links = [
   { to: "/", label: "Accueil" },
   { to: "/bibliotheque", label: "Bibliothèque" },
   { to: "/demande", label: "Demande" },
-  { to: "/dons", label: "Offrandes" },
+  { to: "/abonnement", label: "Abonnement" },
   { to: "/temoignages", label: "Témoignages" },
   { to: "/apropos", label: "À propos" },
 ];

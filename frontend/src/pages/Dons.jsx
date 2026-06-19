@@ -1,104 +1,130 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { Flame, Sparkles } from "lucide-react";
+import { Flame, Check, Sparkles } from "lucide-react";
 
-const Dons = () => {
-  const [packages, setPackages] = useState([]);
-  const [loading, setLoading] = useState(null);
+const Abonnement = () => {
+  const [pkg, setPkg] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
-    api.get("/donations/packages").then(({ data }) => setPackages(data));
+    api.get("/donations/packages").then(({ data }) => {
+      setPkg(data[0] || null);
+    });
   }, []);
 
-  const checkout = async (pkg_id) => {
-    setLoading(pkg_id);
+  const checkout = async () => {
+    if (!pkg) return;
+    setLoading(true);
     try {
       const { data } = await api.post("/donations/checkout", {
-        package_id: pkg_id,
+        package_id: pkg.id,
         origin_url: window.location.origin,
       });
       window.location.href = data.url;
     } catch (err) {
-      alert(err.response?.data?.detail || "Erreur lors de la création de l'offrande.");
-      setLoading(null);
+      alert(err.response?.data?.detail || "Erreur lors de l'abonnement.");
+      setLoading(false);
     }
   };
 
+  const benefits = [
+    "Accès illimité à toutes les prières du site, sans restriction",
+    "Composition d'oraisons personnelles par notre guide intérieur",
+    "Toutes les futures prières ajoutées incluses dans l'abonnement",
+    "Soutien direct à la pérennité de l'Espace Sacré",
+  ];
+
   return (
-    <div className="max-w-6xl mx-auto px-6 lg:px-10 py-20" data-testid="dons-page">
-      <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Offrande sacrée</p>
+    <div className="max-w-5xl mx-auto px-6 lg:px-10 py-20" data-testid="abonnement-page">
+      <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Rejoindre l'Espace</p>
       <h1 className="font-serif-display text-5xl md:text-6xl text-[var(--ivory)] leading-tight">
-        Déposez votre <em className="text-[var(--gold)]">cierge</em>
+        Un <em className="text-[var(--gold)]">abonnement</em>, un accès complet
       </h1>
       <p className="mt-6 mb-14 max-w-2xl font-serif-body text-[var(--ivory-muted)] text-lg leading-relaxed">
-        Toute offrande, quelle que soit sa taille, devient lumière. À partir de 21€, vous recevez l'accès aux prières
-        sacrées et à la composition d'oraisons personnelles.
+        Un seul engagement vous ouvre l'ensemble des contenus du site&nbsp;: prières scellées, oraisons personnelles,
+        et tout ce qui sera ajouté au fil du temps.
       </p>
 
       {!user && (
-        <div className="sacred-card sharp p-6 mb-10 border-l-4 border-l-[var(--gold)]" data-testid="dons-auth-hint">
+        <div className="sacred-card sharp p-6 mb-10 border-l-4 border-l-[var(--gold)]" data-testid="abonnement-auth-hint">
           <p className="font-serif-body italic text-[var(--ivory-muted)]">
-            Astuce&nbsp;: créez un compte avant de faire votre offrande pour que votre statut de gardien soit lié à votre profil.
+            Astuce&nbsp;: créez un compte avant de vous abonner pour que votre accès soit lié à votre profil.
           </p>
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-[rgba(212,175,55,0.12)]">
-        {packages.map((p, i) => (
-          <div key={p.id} className="sacred-card sharp p-8 flex flex-col" data-testid={`package-${p.id}`}>
-            <p className="font-engraved text-[10px] text-[var(--ivory-muted)] mb-2">{`Offrande 0${i + 1}`}</p>
-            <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-3 leading-tight">{p.label}</h3>
-            <div className="flex items-baseline gap-1 mb-6">
-              <span className="font-serif-display text-5xl text-[var(--gold)]">{p.amount}</span>
-              <span className="font-engraved text-[10px] text-[var(--ivory-muted)]">{p.currency.toUpperCase()}</span>
-            </div>
-            {p.amount >= 21 ? (
-              <p className="font-serif-body text-sm text-[var(--ivory-muted)] mb-6 italic">
-                ✦ Inclut l'accès gardien : prières sacrées + oraisons personnelles
-              </p>
-            ) : (
-              <p className="font-serif-body text-sm text-[var(--ivory-muted)] mb-6 italic">
-                Soutien simple au espace
-              </p>
-            )}
-            <button
-              onClick={() => checkout(p.id)}
-              disabled={loading === p.id}
-              className="btn-sacred sharp mt-auto"
-              data-testid={`donate-btn-${p.id}`}
-            >
-              {loading === p.id ? "Préparation…" : "Faire l'offrande"}
-            </button>
+      <div className="grid md:grid-cols-2 gap-px bg-[rgba(212,175,55,0.15)]" data-testid="abonnement-card">
+        {/* Offer */}
+        <div className="sacred-card sharp p-10 lg:p-14 flex flex-col">
+          <Flame className="text-[var(--gold)] flicker mb-6" strokeWidth={1.1} size={40} />
+          <p className="font-engraved text-[10px] text-[var(--ivory-muted)] mb-2">Formule unique</p>
+          <h2 className="font-serif-display text-4xl text-[var(--ivory)] mb-6 leading-tight">
+            {pkg ? pkg.label : "Abonnement annuel"}
+          </h2>
+
+          <div className="flex items-baseline gap-2 mb-2">
+            <span className="font-serif-display text-7xl text-[var(--gold)]">
+              {pkg ? pkg.amount : 29}
+            </span>
+            <span className="font-engraved text-[11px] text-[var(--ivory-muted)]">
+              {pkg ? pkg.currency.toUpperCase() : "EUR"} / AN
+            </span>
           </div>
-        ))}
+          <p className="font-serif-body italic text-[var(--ivory-muted)] mb-10">
+            Soit moins de 2,50€ par mois.
+          </p>
+
+          <button
+            onClick={checkout}
+            disabled={loading || !pkg}
+            className="btn-sacred btn-sacred-filled sharp w-full"
+            data-testid="subscribe-btn"
+          >
+            {loading ? "Préparation…" : "S'abonner maintenant"}
+          </button>
+
+          <p className="font-engraved text-[10px] text-[var(--ivory-muted)] text-center mt-6">
+            Paiement sécurisé via Stripe · Sans engagement de reconduction
+          </p>
+        </div>
+
+        {/* Benefits */}
+        <div className="sacred-card sharp p-10 lg:p-14">
+          <Sparkles className="text-[var(--gold)] mb-6" strokeWidth={1.1} size={36} />
+          <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-6">Ce que vous recevez</h3>
+          <ul className="space-y-5">
+            {benefits.map((b, i) => (
+              <li key={i} className="flex gap-3 items-start font-serif-body text-[var(--ivory)]" data-testid={`benefit-${i}`}>
+                <Check className="text-[var(--gold)] mt-1 shrink-0" strokeWidth={1.4} size={18} />
+                <span className="leading-relaxed">{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          {user?.is_donor && (
+            <div className="mt-10 pt-8 border-t border-[rgba(212,175,55,0.15)]" data-testid="already-subscribed">
+              <p className="font-engraved text-[10px] text-[var(--gold)] mb-2">✦ Vous êtes abonné</p>
+              <p className="font-serif-body italic text-[var(--ivory-muted)]">
+                Merci. Tout l'Espace vous est déjà ouvert. Vous pouvez renouveler ou offrir un abonnement supplémentaire.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="mt-20 grid md:grid-cols-2 gap-12 items-start">
-        <div className="sacred-card sharp p-10">
-          <Flame className="text-[var(--gold)] mb-4" strokeWidth={1.1} size={32} />
-          <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-4">Ce que votre offrande permet</h3>
-          <ul className="font-serif-body text-[var(--ivory-muted)] space-y-3 leading-relaxed">
-            <li>— La transmission silencieuse de prières millénaires</li>
-            <li>— Le maintien du espace numérique ouvert à tous</li>
-            <li>— L'accompagnement personnalisé des demandes</li>
-            <li>— L'écriture d'oraisons inédites par notre guide intérieur</li>
-          </ul>
-        </div>
-        <div className="sacred-card sharp p-10">
-          <Sparkles className="text-[var(--gold)] mb-4" strokeWidth={1.1} size={32} />
-          <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-4">Ce que vous recevez (dès 21€)</h3>
-          <ul className="font-serif-body text-[var(--ivory-muted)] space-y-3 leading-relaxed">
-            <li>— Accès aux prières scellées de la bibliothèque</li>
-            <li>— Composition de prières personnelles illimitée</li>
-            <li>— Statut de gardien à vie du espace</li>
-            <li>— Notre gratitude la plus profonde</li>
-          </ul>
-        </div>
+      <div className="mt-16 max-w-3xl mx-auto text-center">
+        <div className="divider-ornament mb-8"><Flame size={14} strokeWidth={1.2} /></div>
+        <p className="font-serif-body italic text-[var(--ivory-muted)] leading-relaxed">
+          Si vous traversez une situation difficile et ne pouvez pas vous abonner, écrivez-nous via le formulaire
+          de demande&nbsp;: <Link to="/demande" className="text-[var(--gold)] underline-offset-4 hover:underline">déposer une intention</Link>.
+          Aucune âme n'est laissée à la porte.
+        </p>
       </div>
     </div>
   );
 };
 
-export default Dons;
+export default Abonnement;

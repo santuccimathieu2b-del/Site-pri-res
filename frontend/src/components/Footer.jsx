@@ -19,7 +19,7 @@ const Footer = () => (
         <ul className="space-y-2 text-sm text-[var(--ivory-muted)]">
           <li><Link to="/bibliotheque" className="hover:text-[var(--gold)] transition">Bibliothèque</Link></li>
           <li><Link to="/demande" className="hover:text-[var(--gold)] transition">Demande de prière</Link></li>
-          <li><Link to="/dons" className="hover:text-[var(--gold)] transition">Offrandes</Link></li>
+          <li><Link to="/abonnement" className="hover:text-[var(--gold)] transition">Abonnement</Link></li>
           <li><Link to="/temoignages" className="hover:text-[var(--gold)] transition">Témoignages</Link></li>
         </ul>
       </div>

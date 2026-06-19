@@ -49,14 +49,11 @@ security = HTTPBearer(auto_error=False)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ----------- Donation packages (server-defined to prevent tampering) -----------
+# ----------- Subscription package (single annual offer) -----------
 DONATION_PACKAGES = {
-    "lueur": {"amount": 7.0, "currency": "eur", "label": "Lueur de Lumière"},
-    "cierge": {"amount": 21.0, "currency": "eur", "label": "Cierge Béni"},
-    "sanctuaire": {"amount": 49.0, "currency": "eur", "label": "Offrande de l'Espace"},
-    "gardien": {"amount": 108.0, "currency": "eur", "label": "Gardien des Âmes"},
+    "annuel": {"amount": 29.0, "currency": "eur", "label": "Abonnement annuel"},
 }
-DONOR_THRESHOLD = 21.0  # any donation >= grants donor status
+DONOR_THRESHOLD = 29.0  # threshold to grant full access
 
 # ----------- Models -----------
 class UserRegister(BaseModel):
@@ -394,7 +391,7 @@ async def my_requests(user=Depends(get_current_user)):
 @api_router.post("/ai/generate-prayer")
 async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_user)):
     if not user.get("is_donor"):
-        raise HTTPException(403, "Cette fonctionnalité est réservée aux membres donateurs.")
+        raise HTTPException(403, "Cette fonctionnalité est réservée aux abonnés.")
     if not EMERGENT_LLM_KEY:
         raise HTTPException(500, "Service IA indisponible.")
 
@@ -457,10 +454,10 @@ async def get_packages():
 async def create_checkout(payload: CheckoutCreateRequest, http_request: Request, user=Depends(get_optional_user)):
     pkg = DONATION_PACKAGES.get(payload.package_id)
     if not pkg:
-        raise HTTPException(400, "Offrande inconnue.")
+        raise HTTPException(400, "Formule inconnue.")
     origin = payload.origin_url.rstrip("/")
-    success_url = f"{origin}/dons/merci?session_id={{CHECKOUT_SESSION_ID}}"
-    cancel_url = f"{origin}/dons"
+    success_url = f"{origin}/abonnement/merci?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin}/abonnement"
 
     host_url = str(http_request.base_url)
     webhook_url = f"{host_url}api/webhook/stripe"
@@ -542,11 +539,11 @@ async def donation_status(session_id: str):
         if email_to:
             asyncio.create_task(send_email_async(
                 email_to,
-                "Merci pour votre offrande sacrée",
+                "Merci pour votre abonnement",
                 f"<div style='font-family:Georgia,serif;background:#08090C;color:#F4ECD8;padding:32px;'>"
                 f"<h1 style='color:#D4AF37;font-weight:300;'>Votre lumière éclaire l'Espace</h1>"
-                f"<p>Votre offrande de {tx['amount']} {tx['currency'].upper()} a été reçue avec gratitude.</p>"
-                f"<p>Votre accès aux prières sacrées réservées est désormais ouvert.</p>"
+                f"<p>Votre abonnement de {tx['amount']} {tx['currency'].upper()} a été activé avec gratitude.</p>"
+                f"<p>Tous les contenus du site vous sont désormais ouverts, sans restriction.</p>"
                 f"<p style='color:#C8BAA1;'>— Espace Sacré</p></div>"
             ))
 
