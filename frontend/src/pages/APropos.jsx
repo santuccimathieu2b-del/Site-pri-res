@@ -13,7 +13,7 @@ const APropos = () => (
     <article className="font-serif-body text-lg text-[var(--ivory-muted)] leading-loose space-y-6">
       <p className="initial-letter">
         Cet espace est né d'une certitude simple&nbsp;: la prière n'appartient à aucune religion en particulier.
-        Elle appartient à celui qui prie. Des premières pratiques préhistoriques aux origines ésotériques de
+        Elle appartient à celui qui prie. Des premières pratiques préhistoriques aux rites ésotériques de
         Mésopotamie ou d'Égypte, chaque tradition a posé sur le monde une parole de paix, de soin, de protection.
       </p>
       <p>
