@@ -88,6 +88,14 @@ const Bibliotheque = () => {
           <h1 className="font-serif-display text-5xl md:text-6xl text-[var(--ivory)] leading-tight">
             La <em className="text-[var(--gold)]">Bibliothèque</em> des prières et des pratiques
           </h1>
+          <div className="mt-6 sacred-card sharp p-5 border-l-4 border-l-[var(--gold)] max-w-3xl" data-testid="library-disclaimer">
+            <p className="font-serif-body text-[var(--ivory-muted)] text-sm leading-relaxed">
+              <span className="font-engraved text-[var(--gold)] text-[10px] mr-2">Rappel :</span>
+              Les prières et rituels présentés sur ce site ne constituent ni un avis médical ni une alternative à un
+              suivi professionnel. Pour toute question concernant votre santé physique ou mentale, consultez un
+              professionnel de santé.
+            </p>
+          </div>
           <p className="mt-6 max-w-2xl font-serif-body text-[var(--ivory-muted)] text-lg">
             Pour déverrouiller l'accès complet à la bibliothèque, il est nécessaire de s'abonner.
           </p>
