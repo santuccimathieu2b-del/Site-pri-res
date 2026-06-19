@@ -685,17 +685,8 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
-    # auto-seed prayers if empty
-    count = await db.prayers.count_documents({})
-    if count == 0:
-        logger.info("Seeding prayers on startup...")
-        try:
-            # call directly
-            from fastapi.testclient import TestClient  # noqa
-        except Exception:
-            pass
-        # invoke seed
-        await seed()
+    # No auto-seed: prayers are managed by admin via /admin/prayers endpoints
+    logger.info("Espace Sacré backend started.")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
