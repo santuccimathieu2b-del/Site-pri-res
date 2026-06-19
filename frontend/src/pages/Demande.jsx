@@ -3,8 +3,8 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { Send, ScrollText } from "lucide-react";
 
-const Demande = () => {
-  const [form, setForm] = useState({ name: "", email: "", category: "soins", intention: "" });
+const Contact = () => {
+  const [form, setForm] = useState({ name: "", email: "", intention: "" });
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -12,10 +12,11 @@ const Demande = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await api.post("/prayer-requests", form);
+      // category is no longer asked from user; default to "soins" server-side
+      await api.post("/prayer-requests", { ...form, category: "soins" });
       setDone(true);
-      toast.success("Votre intention a été reçue.");
-      setForm({ name: "", email: "", category: "soins", intention: "" });
+      toast.success("Votre message a été reçu.");
+      setForm({ name: "", email: "", intention: "" });
     } catch (err) {
       toast.error(err.response?.data?.detail || "Une erreur est survenue.");
     } finally {
@@ -24,26 +25,25 @@ const Demande = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-6 lg:px-10 py-20" data-testid="demande-page">
-      <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Confier une intention</p>
+    <div className="max-w-3xl mx-auto px-6 lg:px-10 py-20" data-testid="contact-page">
+      <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Nous écrire</p>
       <h1 className="font-serif-display text-5xl md:text-6xl text-[var(--ivory)] leading-tight">
-        Déposez votre <em className="text-[var(--gold)]">intention</em>
+        <em className="text-[var(--gold)]">Contact</em>
       </h1>
       <p className="mt-6 mb-12 font-serif-body text-[var(--ivory-muted)] text-lg leading-relaxed">
-        Écrivez avec vos mots, sans souci de forme. Votre demande sera reçue avec recueillement et portée dans nos prières
-        quotidiennes.
+        Écrivez-nous avec vos mots, sans souci de forme. Votre message sera lu avec attention et vous recevrez une réponse.
       </p>
 
       <div className="divider-ornament mb-12"><ScrollText size={14} strokeWidth={1.2} /></div>
 
       {done ? (
-        <div className="sacred-card sharp p-12 text-center" data-testid="demande-success">
-          <h2 className="font-serif-display text-4xl text-[var(--gold)] mb-4">Votre intention est entendue.</h2>
+        <div className="sacred-card sharp p-12 text-center" data-testid="contact-success">
+          <h2 className="font-serif-display text-4xl text-[var(--gold)] mb-4">Votre message est arrivé.</h2>
           <p className="font-serif-body text-[var(--ivory-muted)] mb-8">
-            Une confirmation vous a été envoyée. Nos prières s'élèvent désormais avec vous.
+            Une confirmation vous a été envoyée. Nous reviendrons vers vous dans les meilleurs délais.
           </p>
-          <button onClick={() => setDone(false)} className="btn-sacred sharp" data-testid="demande-new">
-            Déposer une autre intention
+          <button onClick={() => setDone(false)} className="btn-sacred sharp" data-testid="contact-new">
+            Envoyer un autre message
           </button>
         </div>
       ) : (
@@ -57,7 +57,7 @@ const Demande = () => {
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="sacred-input sharp"
                 placeholder="Marie, Étienne…"
-                data-testid="demande-name"
+                data-testid="contact-name"
               />
             </div>
             <div>
@@ -69,38 +69,21 @@ const Demande = () => {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="sacred-input sharp"
                 placeholder="votre@email.fr"
-                data-testid="demande-email"
+                data-testid="contact-email"
               />
             </div>
           </div>
 
           <div>
-            <label className="font-engraved text-[10px] text-[var(--gold)] block mb-2">Type de prière</label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[rgba(212,175,55,0.15)]">
-              {["soins", "protection", "exorcisme", "esoterisme"].map((c) => (
-                <button
-                  type="button"
-                  key={c}
-                  onClick={() => setForm({ ...form, category: c })}
-                  className={`py-4 font-engraved text-[10px] transition ${form.category === c ? "bg-[var(--bordeaux)] text-[var(--ivory)]" : "bg-[rgba(17,19,26,0.8)] text-[var(--ivory-muted)] hover:text-[var(--gold)]"}`}
-                  data-testid={`demande-cat-${c}`}
-                >
-                  {c === "esoterisme" ? "ésotérisme" : c}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="font-engraved text-[10px] text-[var(--gold)] block mb-2">Votre intention</label>
+            <label className="font-engraved text-[10px] text-[var(--gold)] block mb-2">Votre message</label>
             <textarea
               required
-              rows={7}
+              rows={8}
               value={form.intention}
               onChange={(e) => setForm({ ...form, intention: e.target.value })}
               className="sacred-input sharp resize-none"
-              placeholder="Écrivez librement. Pour qui priez-vous ? Que souhaitez-vous voir advenir ?"
-              data-testid="demande-intention"
+              placeholder="Écrivez librement…"
+              data-testid="contact-message"
             />
           </div>
 
@@ -108,10 +91,10 @@ const Demande = () => {
             type="submit"
             disabled={submitting}
             className="btn-sacred btn-sacred-filled sharp w-full flex items-center justify-center gap-3"
-            data-testid="demande-submit"
+            data-testid="contact-submit"
           >
             <Send size={14} strokeWidth={1.4} />
-            {submitting ? "Recueillement…" : "Déposer l'intention"}
+            {submitting ? "Envoi…" : "Envoyer le message"}
           </button>
         </form>
       )}
@@ -119,4 +102,4 @@ const Demande = () => {
   );
 };
 
-export default Demande;
+export default Contact;

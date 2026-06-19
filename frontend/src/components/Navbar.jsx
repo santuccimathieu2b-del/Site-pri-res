@@ -6,7 +6,7 @@ import { Flame, LogOut, User } from "lucide-react";
 const links = [
   { to: "/", label: "Accueil" },
   { to: "/bibliotheque", label: "Bibliothèque" },
-  { to: "/demande", label: "Demande" },
+  { to: "/contact", label: "Contact" },
   { to: "/abonnement", label: "Abonnement" },
   { to: "/temoignages", label: "Témoignages" },
   { to: "/apropos", label: "À propos" },

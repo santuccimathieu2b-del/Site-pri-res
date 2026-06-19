@@ -49,8 +49,8 @@ const Home = () => {
               <Link to="/bibliotheque" className="btn-sacred sharp" data-testid="cta-bibliotheque">
                 Entrer dans la bibliothèque
               </Link>
-              <Link to="/demande" className="btn-sacred btn-sacred-filled sharp" data-testid="cta-demande">
-                Confier une intention
+              <Link to="/contact" className="btn-sacred btn-sacred-filled sharp" data-testid="cta-demande">
+                Nous contacter
               </Link>
             </div>
           </div>

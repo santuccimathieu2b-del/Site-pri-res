@@ -119,7 +119,7 @@ const Abonnement = () => {
         <div className="divider-ornament mb-8"><Flame size={14} strokeWidth={1.2} /></div>
         <p className="font-serif-body italic text-[var(--ivory-muted)] leading-relaxed">
           Si vous traversez une situation difficile et ne pouvez pas vous abonner, écrivez-nous via le formulaire
-          de demande&nbsp;: <Link to="/demande" className="text-[var(--gold)] underline-offset-4 hover:underline">déposer une intention</Link>.
+          de contact&nbsp;: <Link to="/contact" className="text-[var(--gold)] underline-offset-4 hover:underline">nous écrire</Link>.
           Aucune âme n'est laissée à la porte.
         </p>
       </div>

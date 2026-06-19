@@ -144,7 +144,7 @@ const EspaceMembre = () => {
           </div>
           {requests.length === 0 ? (
             <p className="font-serif-body italic text-[var(--ivory-muted)]">
-              Aucune intention déposée pour l'instant. <Link to="/demande" className="text-[var(--gold)] underline-offset-4 hover:underline">En déposer une</Link>.
+              Aucune intention déposée pour l'instant. <Link to="/contact" className="text-[var(--gold)] underline-offset-4 hover:underline">Nous écrire</Link>.
             </p>
           ) : (
             <ul className="space-y-5 max-h-[420px] overflow-y-auto pr-2">
