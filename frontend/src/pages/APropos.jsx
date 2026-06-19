@@ -25,9 +25,6 @@ const APropos = () => (
         Nous ne demandons aucune appartenance, aucune croyance préalable. Seulement le silence de quelques minutes,
         et la confiance en ce qui, en vous, sait déjà prier.
       </p>
-      <p className="text-[var(--gold)] italic font-serif-display text-2xl mt-12 text-center">
-        « Que tout ce qui souffre trouve sa lumière. »
-      </p>
       <div className="divider-ornament mt-10"><ScrollText size={14} strokeWidth={1.2} /></div>
     </article>
   </div>
