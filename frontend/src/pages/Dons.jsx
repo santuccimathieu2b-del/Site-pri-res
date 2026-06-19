@@ -31,9 +31,9 @@ const Abonnement = () => {
   };
 
   const benefits = [
-    "Accès illimité à toutes les prières du site, sans restriction",
+    "Accès illimité et à vie à toutes les prières du site, sans restriction",
     "Composition d'oraisons personnelles par notre guide intérieur",
-    "Toutes les futures prières ajoutées incluses dans l'abonnement",
+    "Toutes les futures prières et pratiques ajoutées incluses",
     "Soutien direct à la pérennité de l'Espace Sacré",
   ];
 
@@ -62,7 +62,7 @@ const Abonnement = () => {
           <Flame className="text-[var(--gold)] flicker mb-6" strokeWidth={1.1} size={40} />
           <p className="font-engraved text-[10px] text-[var(--ivory-muted)] mb-2">Formule unique</p>
           <h2 className="font-serif-display text-4xl text-[var(--ivory)] mb-6 leading-tight">
-            {pkg ? pkg.label : "Abonnement annuel"}
+            {pkg ? pkg.label : "Abonnement à vie"}
           </h2>
 
           <div className="flex items-baseline gap-2 mb-2">
@@ -70,11 +70,11 @@ const Abonnement = () => {
               {pkg ? pkg.amount : 29}
             </span>
             <span className="font-engraved text-[11px] text-[var(--ivory-muted)]">
-              {pkg ? pkg.currency.toUpperCase() : "EUR"} / AN
+              {pkg ? pkg.currency.toUpperCase() : "EUR"} · À VIE
             </span>
           </div>
           <p className="font-serif-body italic text-[var(--ivory-muted)] mb-10">
-            Soit moins de 2,50€ par mois.
+            Un paiement unique, un accès permanent.
           </p>
 
           <button
@@ -83,11 +83,11 @@ const Abonnement = () => {
             className="btn-sacred btn-sacred-filled sharp w-full"
             data-testid="subscribe-btn"
           >
-            {loading ? "Préparation…" : "S'abonner maintenant"}
+            {loading ? "Préparation…" : "S'abonner à vie"}
           </button>
 
           <p className="font-engraved text-[10px] text-[var(--ivory-muted)] text-center mt-6">
-            Paiement sécurisé via Stripe · Sans engagement de reconduction
+            Paiement sécurisé via Stripe · Aucun renouvellement, aucun prélèvement automatique
           </p>
         </div>
 
