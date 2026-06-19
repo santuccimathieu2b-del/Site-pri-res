@@ -1,20 +1,19 @@
 import React from "react";
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Flame, LogOut, User } from "lucide-react";
 
-const links = [
+const baseLinks = [
   { to: "/", label: "Accueil" },
   { to: "/bibliotheque", label: "Bibliothèque" },
-  { to: "/contact", label: "Contact" },
   { to: "/abonnement", label: "Abonnement" },
+  { to: "/contact", label: "Contact" },
   { to: "/temoignages", label: "Témoignages" },
   { to: "/apropos", label: "À propos" },
 ];
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  const location = useLocation();
 
   return (
     <nav className="sticky top-0 z-40 backdrop-blur-xl bg-[#08090C]/85 border-b border-[rgba(212,175,55,0.12)]" data-testid="main-nav">
@@ -27,8 +26,8 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <div className="hidden lg:flex items-center gap-9">
-          {links.map((l) => (
+        <div className="hidden lg:flex items-center gap-8">
+          {baseLinks.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
@@ -39,6 +38,15 @@ const Navbar = () => {
               {l.label}
             </NavLink>
           ))}
+          {!user && (
+            <NavLink
+              to="/connexion"
+              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+              data-testid="nav-connexion"
+            >
+              Connexion
+            </NavLink>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
@@ -53,12 +61,9 @@ const Navbar = () => {
               </button>
             </>
           ) : (
-            <>
-              <Link to="/connexion" className="nav-link" data-testid="login-link">Connexion</Link>
-              <Link to="/inscription" className="btn-sacred sharp hidden sm:inline-block" data-testid="register-link">
-                Rejoindre
-              </Link>
-            </>
+            <Link to="/connexion" className="nav-link lg:hidden" data-testid="login-link-mobile">
+              Connexion
+            </Link>
           )}
         </div>
       </div>

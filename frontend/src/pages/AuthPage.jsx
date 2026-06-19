@@ -34,10 +34,10 @@ const AuthPage = ({ mode }) => {
       <div className="text-center mb-10">
         <Flame className="text-[var(--gold)] flicker mx-auto mb-4" strokeWidth={1.1} size={40} />
         <p className="font-engraved text-[var(--gold)] text-[11px] mb-2">
-          {mode === "login" ? "Retour au espace" : "Rejoindre le espace"}
+          {mode === "login" ? "Retour à l'espace" : "Créer un compte"}
         </p>
         <h1 className="font-serif-display text-4xl text-[var(--ivory)]">
-          {mode === "login" ? "Connexion" : "Inscription"}
+          {mode === "login" ? "Connexion" : "Créer mon compte"}
         </h1>
       </div>
 
@@ -82,17 +82,28 @@ const AuthPage = ({ mode }) => {
           className="btn-sacred btn-sacred-filled sharp w-full"
           data-testid="auth-submit"
         >
-          {submitting ? "Recueillement…" : mode === "login" ? "Entrer" : "Rejoindre"}
+          {submitting ? "Recueillement…" : mode === "login" ? "Se connecter" : "Créer mon compte"}
         </button>
       </form>
 
-      <p className="text-center mt-8 font-serif-body text-[var(--ivory-muted)]">
-        {mode === "login" ? (
-          <>Pas encore membre ? <Link to="/inscription" className="text-[var(--gold)] underline-offset-4 hover:underline">Rejoindre</Link></>
-        ) : (
-          <>Déjà membre ? <Link to="/connexion" className="text-[var(--gold)] underline-offset-4 hover:underline">Connexion</Link></>
-        )}
-      </p>
+      {mode === "login" ? (
+        <div className="sacred-card sharp p-6 mt-8 text-center" data-testid="create-account-block">
+          <p className="font-serif-body text-[var(--ivory-muted)] mb-4">
+            Vous n'avez pas encore de compte&nbsp;?
+          </p>
+          <Link
+            to="/inscription"
+            className="btn-sacred sharp inline-block"
+            data-testid="create-account-link"
+          >
+            Créer un compte
+          </Link>
+        </div>
+      ) : (
+        <p className="text-center mt-8 font-serif-body text-[var(--ivory-muted)]">
+          Déjà un compte&nbsp;? <Link to="/connexion" className="text-[var(--gold)] underline-offset-4 hover:underline">Se connecter</Link>
+        </p>
+      )}
     </div>
   );
 };
