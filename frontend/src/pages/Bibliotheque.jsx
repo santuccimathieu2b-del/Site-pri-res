@@ -85,9 +85,8 @@ const Bibliotheque = () => {
     <div className="max-w-7xl mx-auto px-6 lg:px-10 py-20" data-testid="library-page">
       <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Recueil sacré</p>
           <h1 className="font-serif-display text-5xl md:text-6xl text-[var(--ivory)] leading-tight">
-            La <em className="text-[var(--gold)]">Bibliothèque</em> des prières
+            La <em className="text-[var(--gold)]">Bibliothèque</em> des prières et des pratiques
           </h1>
           <p className="mt-6 max-w-2xl font-serif-body text-[var(--ivory-muted)] text-lg">
             Chaque prière a été déposée ici comme un cierge. Lisez-les à voix basse, ou laissez-les vous lire.
