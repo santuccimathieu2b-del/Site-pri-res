@@ -89,7 +89,7 @@ const Bibliotheque = () => {
             La <em className="text-[var(--gold)]">Bibliothèque</em> des prières et des pratiques
           </h1>
           <p className="mt-6 max-w-2xl font-serif-body text-[var(--ivory-muted)] text-lg">
-            Chaque prière a été déposée ici comme un cierge. Lisez-les à voix basse, ou laissez-les vous lire.
+            Pour déverrouiller l'accès complet à la bibliothèque, il est nécessaire de s'abonner.
           </p>
         </div>
         {isAdmin && (
