@@ -42,7 +42,7 @@ const Abonnement = () => {
         Un <em className="text-[var(--gold)]">abonnement</em>, un accès complet
       </h1>
       <p className="mt-6 mb-14 max-w-2xl font-serif-body text-[var(--ivory-muted)] text-lg leading-relaxed">
-        Un seul engagement vous ouvre l'ensemble des contenus du site&nbsp;: prières scellées, pratiques, matériel,
+        Un seul engagement vous ouvre l'ensemble des contenus du site&nbsp;: prières scellées, rituels et matériel,
         et tout ce qui sera ajouté au fil du temps.
       </p>
 
