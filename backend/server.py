@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 # ----------- Subscription package (single annual offer) -----------
 DONATION_PACKAGES = {
-    "annuel": {"amount": 29.0, "currency": "eur", "label": "Abonnement à vie"},
+    "vie": {"amount": 29.0, "currency": "eur", "label": "Abonnement à vie"},
 }
 DONOR_THRESHOLD = 29.0  # threshold to grant full access
 
