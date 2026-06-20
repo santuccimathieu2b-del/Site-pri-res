@@ -21,10 +21,6 @@ const APropos = () => (
         De transmettre ce qui ne doit pas se perdre. D'écrire, lorsque la situation singulière d'une âme appelle une
         prière singulière.
       </p>
-      <p>
-        Nous ne demandons aucune appartenance, aucune croyance préalable. Seulement le silence de quelques minutes,
-        et la confiance en ce qui, en vous, sait déjà prier.
-      </p>
       <div className="divider-ornament mt-10"><ScrollText size={14} strokeWidth={1.2} /></div>
     </article>
   </div>
