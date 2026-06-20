@@ -183,6 +183,9 @@ const Bibliotheque = () => {
             <p className="font-engraved text-[var(--gold)] text-[10px] mb-4">
               {categories.find((c) => c.slug === selected.category_slug)?.name || ""}
             </p>
+            <p className="font-serif-body italic text-[var(--ivory-muted)] text-sm mb-6 leading-relaxed border-l-2 border-[var(--gold)]/40 pl-3" data-testid="cross-info">
+              Quand vous rencontrez le pictogramme <span className="text-[var(--gold)]">†</span>, cela signifie que vous devez vous signer d'un signe de croix.
+            </p>
             <h2 className="font-serif-display text-4xl text-[var(--ivory)] mb-8 leading-tight">{selected.title}</h2>
             <div className="divider-ornament mb-8"><ScrollText size={14} strokeWidth={1.2} /></div>
 
