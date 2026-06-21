@@ -60,7 +60,7 @@ const DonsMerci = () => {
           </h1>
           <p className="font-serif-body text-lg text-[var(--ivory-muted)] mb-8 leading-relaxed">
             Votre abonnement de {status.data?.amount} {status.data?.currency?.toUpperCase()} a été activé. L'ensemble
-            de l'Espace vous est désormais ouvert. Une confirmation vous a été envoyée par courriel.
+            de tout le site vous est désormais ouvert. Une confirmation vous a été envoyée par courriel.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link to="/bibliotheque" className="btn-sacred sharp" data-testid="merci-cta-library">

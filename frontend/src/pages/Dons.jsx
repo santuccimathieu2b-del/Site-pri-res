@@ -37,7 +37,7 @@ const Abonnement = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-6 lg:px-10 py-20" data-testid="abonnement-page">
-      <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Rejoindre l'Espace</p>
+      <p className="font-engraved text-[var(--gold)] text-[11px] mb-4">Rejoindre la communauté</p>
       <h1 className="font-serif-display text-5xl md:text-6xl text-[var(--ivory)] leading-tight">
         Un <em className="text-[var(--gold)]">abonnement</em>, un accès complet
       </h1>
@@ -106,7 +106,7 @@ const Abonnement = () => {
             <div className="mt-10 pt-8 border-t border-[rgba(212,175,55,0.15)]" data-testid="already-subscribed">
               <p className="font-engraved text-[10px] text-[var(--gold)] mb-2">✦ Vous êtes abonné</p>
               <p className="font-serif-body italic text-[var(--ivory-muted)]">
-                Merci. Tout l'Espace vous est déjà ouvert. Vous pouvez renouveler ou offrir un abonnement supplémentaire.
+                Merci. Tout le site vous est déjà ouvert. Vous pouvez renouveler ou offrir un abonnement supplémentaire.
               </p>
             </div>
           )}

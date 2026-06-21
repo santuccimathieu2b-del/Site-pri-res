@@ -23,7 +23,7 @@ const Home = () => {
         <div className="relative max-w-4xl mx-auto px-6 lg:px-10 py-28 md:py-40">
           <div className="reveal">
             <p className="font-engraved text-[var(--gold)] text-[11px] mb-8 text-center">
-              ✦  Espace Sacré  ✦
+              ✦  Soins · Protections · Délivrances  ✦
             </p>
             <div className="divider-ornament mb-12"><Flame size={16} strokeWidth={1.2} className="flicker" /></div>
 

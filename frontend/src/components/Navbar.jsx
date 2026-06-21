@@ -21,8 +21,8 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-3 group" data-testid="logo-link">
           <Flame className="text-[var(--gold)] flicker" strokeWidth={1.2} size={26} />
           <div className="leading-tight">
-            <div className="font-engraved text-[var(--gold)] text-[13px]">Espace</div>
-            <div className="font-serif-display italic text-[var(--ivory-muted)] text-sm -mt-1">sacré</div>
+            <div className="font-engraved text-[var(--gold)] text-[12px] tracking-[0.22em]">Soins · Protections</div>
+            <div className="font-serif-display italic text-[var(--ivory-muted)] text-base -mt-1">délivrances</div>
           </div>
         </Link>
 

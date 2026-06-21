@@ -194,7 +194,7 @@ const Bibliotheque = () => {
                 <Lock className="mx-auto text-[var(--gold)] mb-4" strokeWidth={1.2} size={32} />
                 <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-3">Prière scellée</h3>
                 <p className="font-serif-body text-[var(--ivory-muted)] mb-8 max-w-md mx-auto">
-                  Cette prière est confiée aux abonnés de l'Espace. Abonnez-vous pour en recevoir l'accès.
+                  Cette prière est confiée aux abonnés. Abonnez-vous pour en recevoir l'accès.
                 </p>
                 <Link to="/abonnement" className="btn-sacred sharp" data-testid="locked-cta">S'abonner</Link>
               </div>
