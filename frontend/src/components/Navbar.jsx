@@ -22,7 +22,7 @@ const Navbar = () => {
           <Flame className="text-[var(--gold)] flicker" strokeWidth={1.2} size={26} />
           <div className="leading-tight">
             <div className="font-engraved text-[var(--gold)] text-[12px] tracking-[0.22em]">Soins · Protections</div>
-            <div className="font-serif-display italic text-[var(--ivory-muted)] text-base -mt-1">délivrances</div>
+            <div className="font-engraved text-[var(--gold)] text-[12px] tracking-[0.22em] mt-0.5">Délivrances</div>
           </div>
         </Link>
 
