@@ -2,10 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { HeartPulse, Shield, Flame, Sparkles as SparklesIcon, Lock, ScrollText, Plus, Pencil, Trash2, X } from "lucide-react";
+import { HeartPulse, Shield, Flame, Sparkles as SparklesIcon, HandHelping, Lock, ScrollText, Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
-const ICONS = { soins: HeartPulse, protection: Shield, exorcisme: Flame, esoterisme: SparklesIcon };
+const ICONS = { soins: HeartPulse, protection: Shield, exorcisme: Flame, aide: HandHelping, esoterisme: SparklesIcon };
 
 const emptyForm = { title: "", category_slug: "soins", excerpt: "", body: "", is_premium: false };
 
@@ -242,8 +242,8 @@ const Bibliotheque = () => {
 
             <div>
               <label className="font-engraved text-[10px] text-[var(--gold)] block mb-2">Catégorie</label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[rgba(212,175,55,0.15)]">
-                {["soins", "protection", "exorcisme", "esoterisme"].map((c) => (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-[rgba(212,175,55,0.15)]">
+                {["soins", "protection", "exorcisme", "aide", "esoterisme"].map((c) => (
                   <button
                     type="button"
                     key={c}

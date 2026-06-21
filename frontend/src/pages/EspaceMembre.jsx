@@ -82,8 +82,8 @@ const EspaceMembre = () => {
             </div>
           ) : (
             <form onSubmit={generate} className="space-y-5">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[rgba(212,175,55,0.15)]">
-                {["soins", "protection", "exorcisme", "esoterisme"].map((c) => (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-[rgba(212,175,55,0.15)]">
+                {["soins", "protection", "exorcisme", "aide", "esoterisme"].map((c) => (
                   <button
                     type="button"
                     key={c}
