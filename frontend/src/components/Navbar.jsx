@@ -5,6 +5,7 @@ import { Flame, LogOut, User } from "lucide-react";
 
 const baseLinks = [
   { to: "/", label: "Accueil" },
+  { to: "/pratique", label: "Pratique et conseils" },
   { to: "/bibliotheque", label: "Bibliothèque" },
   { to: "/abonnement", label: "Abonnement" },
   { to: "/contact", label: "Contact" },

@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 
 import Layout from "@/components/Layout";
 import Home from "@/pages/Home";
+import Pratique from "@/pages/Pratique";
 import Bibliotheque from "@/pages/Bibliotheque";
 import Demande from "@/pages/Demande";
 import Dons from "@/pages/Dons";
@@ -53,5 +54,7 @@ function App() {
     </AuthProvider>
   );
 }
+
+export default App;
 
 export default App;
