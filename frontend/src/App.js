@@ -36,6 +36,7 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/pratique" element={<Pratique />} />
             <Route path="/bibliotheque" element={<Bibliotheque />} />
             <Route path="/demande" element={<Demande />} />
             <Route path="/contact" element={<Demande />} />
