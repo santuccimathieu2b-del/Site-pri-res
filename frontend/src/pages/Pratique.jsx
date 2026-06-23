@@ -88,7 +88,7 @@ const Pratique = () => {
           <h2 className="font-serif-display text-3xl text-[var(--ivory)]">Comment utiliser les prières</h2>
         </div>
         <p className="font-serif-body text-[var(--ivory-muted)] text-lg leading-loose mb-8">
-          {"Il n'y a pas de mode d'emploi mais juste des impératifs :"}
+          {"Il n'y a pas de mode d'emploi mais juste des conseils importants :"}
         </p>
 
         <ul className="space-y-5">
