@@ -257,7 +257,7 @@ CATEGORIES = [
         "icon": "shield",
     },
     {
-        "id": "cat-exorcisme", "slug": "exorcisme", "name": "Prières d'Exorcisme",
+        "id": "cat-exorcisme", "slug": "exorcisme", "name": "Prières d'exorcisme et de délivrance",
         "description": "Libération des entités obscures et purification spirituelle profonde.",
         "icon": "flame",
     },
