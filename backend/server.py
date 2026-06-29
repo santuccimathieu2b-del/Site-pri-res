@@ -316,6 +316,7 @@ class PrayerCreate(BaseModel):
     excerpt: str
     body: str
     is_premium: bool = False
+    pdf_url: Optional[str] = None
 
 class PrayerUpdate(BaseModel):
     title: Optional[str] = None
@@ -323,6 +324,7 @@ class PrayerUpdate(BaseModel):
     excerpt: Optional[str] = None
     body: Optional[str] = None
     is_premium: Optional[bool] = None
+    pdf_url: Optional[str] = None
 
 @api_router.post("/admin/prayers")
 async def admin_create_prayer(payload: PrayerCreate, user=Depends(require_admin)):

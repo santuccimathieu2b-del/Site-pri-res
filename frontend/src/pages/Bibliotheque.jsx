@@ -199,9 +199,24 @@ const Bibliotheque = () => {
                 <Link to="/abonnement" className="btn-sacred sharp" data-testid="locked-cta">S'abonner</Link>
               </div>
             ) : (
-              <p className="font-serif-body text-[var(--ivory)] text-lg leading-loose whitespace-pre-line">
-                {selected.body}
-              </p>
+              <>
+                {selected.pdf_url && (
+                  <div className="mb-8 flex justify-center">
+                    <a
+                      href={selected.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-sacred sharp inline-flex items-center gap-2"
+                      data-testid="prayer-pdf-download"
+                    >
+                      📜 Télécharger le PDF intégral
+                    </a>
+                  </div>
+                )}
+                <p className="font-serif-body text-[var(--ivory)] text-lg leading-loose whitespace-pre-line">
+                  {selected.body}
+                </p>
+              </>
             )}
           </div>
         </div>
