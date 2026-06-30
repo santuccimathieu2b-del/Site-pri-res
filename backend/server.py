@@ -262,8 +262,8 @@ CATEGORIES = [
         "icon": "flame",
     },
     {
-        "id": "cat-aide", "slug": "aide", "name": "Prières d'Aide",
-        "description": "Pour appeler le soutien divin dans les moments de difficulté, de doute ou d'épreuve.",
+        "id": "cat-aide", "slug": "aide", "name": "Prières d'aide et de remerciements",
+        "description": "Pour appeler le soutien divin dans les moments d'épreuve et rendre grâce pour les bienfaits reçus.",
         "icon": "hand-helping",
     },
     {
