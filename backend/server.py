@@ -82,7 +82,7 @@ class PrayerCategory(BaseModel):
 class Prayer(BaseModel):
     id: str
     title: str
-    category_slug: Literal["soins", "protection", "exorcisme", "aide", "esoterisme"]
+    category_slug: Literal["soins", "protection", "exorcisme", "aide", "esoterisme", "wicca"]
     excerpt: str
     body: str
     is_premium: bool
@@ -91,7 +91,7 @@ class Prayer(BaseModel):
 class PrayerRequestCreate(BaseModel):
     name: str
     email: EmailStr
-    category: Literal["soins", "protection", "exorcisme", "aide", "esoterisme"]
+    category: Literal["soins", "protection", "exorcisme", "aide", "esoterisme", "wicca"]
     intention: str
 
 class PrayerRequest(BaseModel):
@@ -105,7 +105,7 @@ class PrayerRequest(BaseModel):
 
 class AIPrayerRequest(BaseModel):
     intention: str
-    category: Literal["soins", "protection", "exorcisme", "aide", "esoterisme"]
+    category: Literal["soins", "protection", "exorcisme", "aide", "esoterisme", "wicca"]
     tone: Literal["doux", "puissant", "intime"] = "doux"
 
 class CheckoutCreateRequest(BaseModel):
@@ -271,6 +271,11 @@ CATEGORIES = [
         "description": "Rituels, objets sacrés et pratiques mystiques pour explorer les voies subtiles.",
         "icon": "sparkles",
     },
+    {
+        "id": "cat-wicca", "slug": "wicca", "name": "Prières Wicca et Sorcellerie",
+        "description": "Prières, invocations et pratiques de la tradition Wicca et de la sorcellerie ancestrale.",
+        "icon": "moon",
+    },
 ]
 
 @api_router.get("/categories", response_model=List[PrayerCategory])
@@ -312,7 +317,7 @@ async def get_prayer(prayer_id: str, user=Depends(get_optional_user)):
 # ----------- Routes: Admin Prayer Management -----------
 class PrayerCreate(BaseModel):
     title: str
-    category_slug: Literal["soins", "protection", "exorcisme", "aide", "esoterisme"]
+    category_slug: Literal["soins", "protection", "exorcisme", "aide", "esoterisme", "wicca"]
     excerpt: str
     body: str
     is_premium: bool = False
@@ -320,7 +325,7 @@ class PrayerCreate(BaseModel):
 
 class PrayerUpdate(BaseModel):
     title: Optional[str] = None
-    category_slug: Optional[Literal["soins", "protection", "exorcisme", "aide", "esoterisme"]] = None
+    category_slug: Optional[Literal["soins", "protection", "exorcisme", "aide", "esoterisme", "wicca"]] = None
     excerpt: Optional[str] = None
     body: Optional[str] = None
     is_premium: Optional[bool] = None
@@ -414,7 +419,7 @@ async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_use
         "Tu réponds UNIQUEMENT par la prière demandée, sans préambule ni explication, "
         "structurée en versets courts, avec une invocation initiale et une bénédiction finale."
     )
-    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme", "aide": "aide et soutien divin", "esoterisme": "rituel et matériel mystique"}[payload.category]
+    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme", "aide": "aide et soutien divin", "esoterisme": "rituel et matériel mystique", "wicca": "Wicca et sorcellerie ancestrale"}[payload.category]
     tone_hint = {
         "doux": "Ton apaisant, doux, contemplatif.",
         "puissant": "Ton ferme, résolu, lumineux et puissant.",
