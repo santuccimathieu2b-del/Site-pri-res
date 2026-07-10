@@ -17,7 +17,7 @@ const Footer = () => (
       <div>
         <h4 className="font-engraved text-[var(--gold)] text-[11px] mb-4">Chemins</h4>
         <ul className="space-y-2 text-sm text-[var(--ivory-muted)]">
-          <li><Link to="/bibliotheque" className="hover:text-[var(--gold)] transition">Bibliothèque</Link></li>
+          <li><Link to="/bibliotheque" className="hover:text-[var(--gold)] transition">Bibliothèque des prières</Link></li>
           <li><Link to="/contact" className="hover:text-[var(--gold)] transition">Contact</Link></li>
           <li><Link to="/abonnement" className="hover:text-[var(--gold)] transition">Abonnement</Link></li>
           <li><Link to="/temoignages" className="hover:text-[var(--gold)] transition">Témoignages</Link></li>
