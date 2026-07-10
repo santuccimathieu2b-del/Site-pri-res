@@ -106,6 +106,14 @@ const Pratique = () => {
               {") même si vous n'êtes pas croyant : faites-le avec conviction."}
             </p>
           </li>
+          <li className="flex gap-5 items-start" data-testid="imperatif-7">
+            <span className="font-serif-display text-3xl text-[var(--gold)] leading-none mt-1">8</span>
+            <p className="font-serif-body text-[var(--ivory)] text-lg leading-relaxed flex-1">
+              {"Nous vous encourageons à faire très attention à la pratique des prières d'exorcisme (particulièrement "}
+              <em className="text-[var(--gold)]">De Exorcizandis Obsessis a Demonio</em>
+              {") et à les utiliser uniquement si vous êtes formés et croyants."}
+            </p>
+          </li>
         </ul>
 
         <p className="font-serif-display italic text-2xl text-[var(--gold)] text-center mt-16">
