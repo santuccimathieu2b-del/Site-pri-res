@@ -272,8 +272,8 @@ CATEGORIES = [
         "icon": "sparkles",
     },
     {
-        "id": "cat-wicca", "slug": "wicca", "name": "Prières Wicca et Sorcellerie",
-        "description": "Prières, invocations et pratiques de la tradition Wicca et de la sorcellerie ancestrale.",
+        "id": "cat-wicca", "slug": "wicca", "name": "Prières wicca, celtiques et gaéliques",
+        "description": "Prières, invocations et pratiques des traditions wicca, celtiques et gaéliques.",
         "icon": "moon",
     },
 ]
@@ -419,7 +419,7 @@ async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_use
         "Tu réponds UNIQUEMENT par la prière demandée, sans préambule ni explication, "
         "structurée en versets courts, avec une invocation initiale et une bénédiction finale."
     )
-    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme", "aide": "aide et soutien divin", "esoterisme": "rituel et matériel mystique", "wicca": "Wicca et sorcellerie ancestrale"}[payload.category]
+    category_label = {"soins": "guérison et soins", "protection": "protection spirituelle", "exorcisme": "libération et exorcisme", "aide": "aide et soutien divin", "esoterisme": "rituel et matériel mystique", "wicca": "wicca, celtique et gaélique"}[payload.category]
     tone_hint = {
         "doux": "Ton apaisant, doux, contemplatif.",
         "puissant": "Ton ferme, résolu, lumineux et puissant.",
