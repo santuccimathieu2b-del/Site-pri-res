@@ -258,7 +258,7 @@ const Bibliotheque = () => {
             <div>
               <label className="font-engraved text-[10px] text-[var(--gold)] block mb-2">Catégorie</label>
               <div className="grid grid-cols-2 md:grid-cols-6 gap-px bg-[rgba(212,175,55,0.15)]">
-                {["soins", "protection", "exorcisme", "aide", "esoterisme", "wicca"].map((c) => (
+                {["soins", "protection", "exorcisme", "aide", "wicca", "esoterisme"].map((c) => (
                   <button
                     type="button"
                     key={c}

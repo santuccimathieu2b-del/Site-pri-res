@@ -267,14 +267,14 @@ CATEGORIES = [
         "icon": "hand-helping",
     },
     {
-        "id": "cat-esoterisme", "slug": "esoterisme", "name": "Rituels et matériel",
-        "description": "Rituels, objets sacrés et pratiques mystiques pour explorer les voies subtiles.",
-        "icon": "sparkles",
-    },
-    {
         "id": "cat-wicca", "slug": "wicca", "name": "Prières wicca, celtiques et gaéliques",
         "description": "Prières, invocations et pratiques des traditions wicca, celtiques et gaéliques.",
         "icon": "moon",
+    },
+    {
+        "id": "cat-esoterisme", "slug": "esoterisme", "name": "Rituels et matériel",
+        "description": "Rituels, objets sacrés et pratiques mystiques pour explorer les voies subtiles.",
+        "icon": "sparkles",
     },
 ]
 

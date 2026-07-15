@@ -83,7 +83,7 @@ const EspaceMembre = () => {
           ) : (
             <form onSubmit={generate} className="space-y-5">
               <div className="grid grid-cols-2 md:grid-cols-6 gap-px bg-[rgba(212,175,55,0.15)]">
-                {["soins", "protection", "exorcisme", "aide", "esoterisme", "wicca"].map((c) => (
+                {["soins", "protection", "exorcisme", "aide", "wicca", "esoterisme"].map((c) => (
                   <button
                     type="button"
                     key={c}
