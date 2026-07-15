@@ -32,14 +32,24 @@ const Footer = () => (
         </ul>
       </div>
       <div>
-        <h4 className="font-engraved text-[var(--gold)] text-[11px] mb-4">Recueillement</h4>
-        <p className="text-sm text-[var(--ivory-muted)] italic font-serif-body">
-          « Que ta lumière soit le chemin, ta paix soit la demeure. »
-        </p>
+        <h4 className="font-engraved text-[var(--gold)] text-[11px] mb-4">Informations</h4>
+        <ul className="space-y-2 text-sm text-[var(--ivory-muted)]">
+          <li><Link to="/mentions-legales" className="hover:text-[var(--gold)] transition" data-testid="footer-mentions">Mentions légales</Link></li>
+          <li><Link to="/confidentialite" className="hover:text-[var(--gold)] transition" data-testid="footer-confidentialite">Politique de confidentialité</Link></li>
+          <li><Link to="/cgv" className="hover:text-[var(--gold)] transition" data-testid="footer-cgv">Conditions générales de vente</Link></li>
+        </ul>
       </div>
     </div>
+    <div className="border-t border-[rgba(212,175,55,0.08)] py-8 px-6">
+      <p className="max-w-5xl mx-auto text-xs text-[var(--ivory-muted)] font-serif-body italic text-center leading-relaxed" data-testid="medical-disclaimer">
+        Les prières, rituels et textes présentés sur ce site ne constituent en aucun cas un avis médical,
+        un traitement, un diagnostic ou une alternative à un suivi professionnel. Pour toute question
+        concernant votre santé physique ou mentale, consultez un médecin, un professionnel de santé
+        ou un spécialiste qualifié.
+      </p>
+    </div>
     <div className="border-t border-[rgba(212,175,55,0.08)] py-6 text-center text-xs text-[var(--ivory-muted)] font-engraved">
-      © {new Date().getFullYear()} Soins Protections Délivrances — Tous chemins préservés
+      © {new Date().getFullYear()} MCS-Éditions — Tous chemins préservés
     </div>
   </footer>
 );

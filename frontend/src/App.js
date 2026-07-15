@@ -16,6 +16,9 @@ import AuthPage from "@/pages/AuthPage";
 import EspaceMembre from "@/pages/EspaceMembre";
 import Temoignages from "@/pages/Temoignages";
 import APropos from "@/pages/APropos";
+import MentionsLegales from "@/pages/MentionsLegales";
+import Confidentialite from "@/pages/Confidentialite";
+import CGV from "@/pages/CGV";
 
 function App() {
   return (
@@ -49,6 +52,9 @@ function App() {
             <Route path="/espace-membre" element={<EspaceMembre />} />
             <Route path="/temoignages" element={<Temoignages />} />
             <Route path="/apropos" element={<APropos />} />
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/confidentialite" element={<Confidentialite />} />
+            <Route path="/cgv" element={<CGV />} />
           </Routes>
         </Layout>
       </BrowserRouter>
