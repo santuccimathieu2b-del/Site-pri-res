@@ -38,6 +38,12 @@ const CGV = () => (
         L'abonnement est proposé au tarif unique de <strong className="text-[var(--gold)]">29 € TTC</strong>,
         payable en une seule fois. Il s'agit d'un abonnement <strong>à vie</strong> pour le compte de l'utilisateur.
       </p>
+      <p>
+        La mention « à vie » s'entend comme la durée d'existence de la société MCS-Éditions ou, si elle est
+        plus courte, la période effective de mise en ligne du site <em>prieres-soins-delivrance.fr</em>.
+        En cas de cessation d'activité de la société ou d'arrêt définitif du site, aucune restitution
+        au prorata ne pourra être exigée.
+      </p>
       <p>La TVA applicable est celle en vigueur à la date de la commande.</p>
     </Section>
 
