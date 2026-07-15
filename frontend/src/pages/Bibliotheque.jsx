@@ -202,15 +202,35 @@ const Bibliotheque = () => {
               <>
                 {selected.pdf_url && (
                   <div className="mb-8 flex justify-center">
-                    <a
-                      href={selected.pdf_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const url = selected.pdf_url;
+                        const filename = `${(selected.title || "priere").replace(/[^\w\-]+/g, "_")}.pdf`;
+                        try {
+                          const response = await fetch(url);
+                          if (!response.ok) throw new Error("fetch failed");
+                          const blob = await response.blob();
+                          const blobUrl = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = blobUrl;
+                          a.download = filename;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+                          toast.success("Téléchargement en cours…");
+                        } catch (err) {
+                          // Fallback: open in new tab
+                          window.open(url, "_blank", "noopener,noreferrer");
+                        }
+                      }}
                       className="btn-sacred sharp inline-flex items-center gap-2"
                       data-testid="prayer-pdf-download"
                     >
                       📜 Télécharger le PDF intégral
-                    </a>
+                    </button>
                   </div>
                 )}
                 <p className="font-serif-body text-[var(--ivory)] text-lg leading-loose whitespace-pre-line">
