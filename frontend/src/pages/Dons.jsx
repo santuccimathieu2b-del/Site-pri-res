@@ -71,7 +71,7 @@ const Abonnement = () => {
             </span>
           </div>
           <p className="font-serif-body italic text-[var(--ivory-muted)] mb-10">
-            Un paiement unique, un accès permanent.
+            Un paiement unique, un accès permanent à l'ensemble du site sans la moindre restriction.
           </p>
 
           <button
