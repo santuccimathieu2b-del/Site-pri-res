@@ -25,7 +25,7 @@ const PARA_PAYER = [
 
 const SITE_PAYANT_TITRE = "Pourquoi ce site est-il payant ?";
 const SITE_PAYANT_1 = "La réponse est simple : les prières de soins sont toutes gratuites.";
-const SITE_PAYANT_2 = "Pour déverrouiller l'ensemble du site, cela devient payant car les autres prières sont beaucoup plus complexes, voire même dangereuses pour certaines, si elles ne sont pas utilisées avec précaution et par quelqu'un formé pour. Elles ont demandé un véritable travail de recherche et de traduction car les versions originales sont pour la plupart en latin. Pour certaines, elles sont interdites à la pratique car réservées aux prêtres exorcistes de l'Église catholique romaine. Elles ne sont là qu'à titre purement informatif.";
+const SITE_PAYANT_2 = "Pour déverrouiller l'ensemble du site, un abonnement est nécessaire car certaines prières sont complexes et très difficiles à obtenir (notamment les exorcismes). Nous demandons une contribution qui nous permet de continuer à chercher, à fouiller des archives ou à se procurer des textes interdits ou protégés.";
 
 const IMPERATIFS = [
   "Le principal est l'intention que vous mettez dans votre pratique. Vous utilisez une prière avec la réelle envie d'aider et de soulager.",
