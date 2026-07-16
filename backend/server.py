@@ -271,11 +271,6 @@ CATEGORIES = [
         "description": "Prières, invocations et pratiques des traditions wicca, celtiques et gaéliques.",
         "icon": "moon",
     },
-    {
-        "id": "cat-esoterisme", "slug": "esoterisme", "name": "Rituels et matériel",
-        "description": "Rituels, objets sacrés et pratiques mystiques pour explorer les voies subtiles.",
-        "icon": "sparkles",
-    },
 ]
 
 @api_router.get("/categories", response_model=List[PrayerCategory])
