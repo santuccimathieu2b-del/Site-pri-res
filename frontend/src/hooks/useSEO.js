@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 const SITE_URL = "https://prieres-soins-delivrance.fr";
 const SITE_NAME = "Prières · Soins · Délivrance";
-const DEFAULT_IMAGE = `${SITE_URL}/og-cover.jpg`;
+const DEFAULT_IMAGE = "https://customer-assets-rejwkqb3.emergentagent.net/job_spirit-shield-1/artifacts/wkvgz52i_iStock-1191563128%20bis.jpg";
 
 function ensureMeta(selector, attrs) {
   let el = document.head.querySelector(selector);
