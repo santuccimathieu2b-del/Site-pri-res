@@ -464,6 +464,7 @@ async def get_packages():
 
 @api_router.post("/donations/checkout")
 async def create_checkout(payload: CheckoutCreateRequest, http_request: Request, user=Depends(get_optional_user)):
+    import stripe as stripe_sdk
     pkg = DONATION_PACKAGES.get(payload.package_id)
     if not pkg:
         raise HTTPException(400, "Formule inconnue.")
@@ -473,28 +474,52 @@ async def create_checkout(payload: CheckoutCreateRequest, http_request: Request,
 
     host_url = str(http_request.base_url)
     webhook_url = f"{host_url}api/webhook/stripe"
-    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
 
     metadata = {
         "source": "sanctuaire_sacre",
         "package_id": payload.package_id,
+        "webhook_url": webhook_url,
     }
     if user:
         metadata["user_id"] = user["id"]
         metadata["user_email"] = user["email"]
 
-    req = CheckoutSessionRequest(
-        amount=float(pkg["amount"]),
-        currency=pkg["currency"],
-        success_url=success_url,
-        cancel_url=cancel_url,
-        metadata=metadata,
-    )
-    session = await stripe_checkout.create_checkout_session(req)
+    stripe_sdk.api_key = STRIPE_API_KEY
+
+    session_params = {
+        "payment_method_types": ["card"],
+        "line_items": [{
+            "price_data": {
+                "currency": pkg["currency"],
+                "product_data": {
+                    "name": "Abonnement — Prières Soins Délivrance",
+                    "description": "Accès illimité à l'ensemble de la bibliothèque de prières.",
+                },
+                "unit_amount": int(float(pkg["amount"]) * 100),
+            },
+            "quantity": 1,
+        }],
+        "mode": "payment",
+        "success_url": success_url,
+        "cancel_url": cancel_url,
+        "metadata": metadata,
+        "invoice_creation": {
+            "enabled": True,
+            "invoice_data": {
+                "description": "Abonnement à la bibliothèque de prières prieres-soins-delivrance.fr",
+                "metadata": {"package_id": payload.package_id},
+                "footer": "MCS-Éditions — SIRET 995 128 642 00015 — TVA FR60995128642",
+            },
+        },
+    }
+    if user and user.get("email"):
+        session_params["customer_email"] = user["email"]
+
+    session = stripe_sdk.checkout.Session.create(**session_params)
 
     tx = {
         "id": str(uuid.uuid4()),
-        "session_id": session.session_id,
+        "session_id": session.id,
         "user_id": user["id"] if user else None,
         "user_email": user["email"] if user else None,
         "package_id": payload.package_id,
@@ -507,7 +532,7 @@ async def create_checkout(payload: CheckoutCreateRequest, http_request: Request,
         "created_at": now_iso(),
     }
     await db.payment_transactions.insert_one(tx)
-    return {"url": session.url, "session_id": session.session_id}
+    return {"url": session.url, "session_id": session.id}
 
 @api_router.get("/donations/status/{session_id}")
 async def donation_status(session_id: str):
