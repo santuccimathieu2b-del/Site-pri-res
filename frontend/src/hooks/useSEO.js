@@ -29,7 +29,7 @@ function setLink(rel, href) {
 export function useSEO({ title, description, image, path = "", keywords, jsonLd }) {
   useEffect(() => {
     const fullTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
-    const desc = description || "Bibliothèque de prières traditionnelles pour la santé, la protection, la délivrance et la paix intérieure. Textes rares et exorcismes conservés avec soin.";
+    const desc = description || "Bibliothèque de plus de 100 prières traditionnelles dont certaines très rares dans les domaines des soins, de la protection, des exorcismes et délivrances.";
     const url = `${SITE_URL}${path}`;
     const img = image || DEFAULT_IMAGE;
 
