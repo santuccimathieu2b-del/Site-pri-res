@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Bots aggressifs à modérer
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://prieres-soins-delivrance.fr/sitemap.xml

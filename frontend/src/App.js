@@ -19,6 +19,7 @@ import APropos from "@/pages/APropos";
 import MentionsLegales from "@/pages/MentionsLegales";
 import Confidentialite from "@/pages/Confidentialite";
 import CGV from "@/pages/CGV";
+import PrayerPage from "@/pages/PrayerPage";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/confidentialite" element={<Confidentialite />} />
             <Route path="/cgv" element={<CGV />} />
+            <Route path="/priere/:slug" element={<PrayerPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>

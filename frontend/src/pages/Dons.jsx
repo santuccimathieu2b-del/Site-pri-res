@@ -3,8 +3,15 @@ import { Link } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Flame, Check, Sparkles } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 const Abonnement = () => {
+  useSEO({
+    title: "Abonnement — Formule unique",
+    description: "Accédez à l'intégralité des prières et rituels du site pour un paiement unique de 29 €. Sans abonnement mensuel, sans restriction.",
+    path: "/abonnement",
+    keywords: "abonnement, prières premium, accès complet, MCS-Éditions",
+  });
   const [pkg, setPkg] = useState(null);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();

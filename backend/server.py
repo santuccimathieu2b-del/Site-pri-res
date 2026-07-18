@@ -294,6 +294,7 @@ async def list_prayers(
             p["locked"] = True
         else:
             p["locked"] = False
+        p["slug"] = slugify_title(p.get("title", "")) if p.get("title") else ""
     return prayers
 
 @api_router.get("/prayers/{prayer_id}")
@@ -307,7 +308,83 @@ async def get_prayer(prayer_id: str, user=Depends(get_optional_user)):
         prayer["locked"] = True
     else:
         prayer["locked"] = False
+    prayer["slug"] = slugify_title(prayer.get("title", "")) if prayer.get("title") else ""
     return prayer
+
+# ----------- Slug helpers & routes -----------
+def slugify_title(title: str) -> str:
+    import unicodedata, re
+    if not title:
+        return ""
+    s = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
+    s = re.sub(r"[^a-zA-Z0-9\s-]", "", s).strip().lower()
+    s = re.sub(r"[\s_-]+", "-", s)
+    return s.strip("-")[:80]
+
+@api_router.get("/prayers/by-slug/{slug}")
+async def get_prayer_by_slug(slug: str, user=Depends(get_optional_user)):
+    prayers = await db.prayers.find({}, {"_id": 0}).to_list(500)
+    match = next((p for p in prayers if slugify_title(p.get("title", "")) == slug), None)
+    if not match:
+        raise HTTPException(404, "Prière introuvable")
+    is_donor = bool(user and user.get("is_donor"))
+    if match.get("is_premium") and not is_donor:
+        match["body"] = ""
+        match["locked"] = True
+    else:
+        match["locked"] = False
+    match["slug"] = slug
+    return match
+
+@api_router.get("/sitemap-data")
+async def sitemap_data():
+    """Returns machine-readable list of URLs for sitemap generation."""
+    prayers = await db.prayers.find({}, {"_id": 0, "id": 1, "title": 1, "category_slug": 1, "created_at": 1}).to_list(500)
+    urls = []
+    for p in prayers:
+        s = slugify_title(p.get("title", ""))
+        if s:
+            urls.append({
+                "loc": f"/priere/{s}",
+                "lastmod": p.get("created_at", "")[:10] if p.get("created_at") else "",
+                "changefreq": "monthly",
+                "priority": 0.7,
+            })
+    return {"prayers": urls, "total": len(urls)}
+
+
+# ----------- Sitemap XML (public, no /api prefix would be better but we keep /api for Kubernetes routing) -----------
+from fastapi.responses import Response
+
+SITE_DOMAIN = "https://prieres-soins-delivrance.fr"
+
+@api_router.get("/sitemap.xml", include_in_schema=False)
+async def sitemap_xml():
+    prayers = await db.prayers.find({}, {"_id": 0, "title": 1, "category_slug": 1, "created_at": 1}).to_list(500)
+    static_pages = [
+        ("", "1.0", "weekly"),
+        ("/bibliotheque", "0.9", "weekly"),
+        ("/pratique", "0.7", "monthly"),
+        ("/abonnement", "0.8", "monthly"),
+        ("/temoignages", "0.6", "monthly"),
+        ("/apropos", "0.5", "monthly"),
+        ("/contact", "0.5", "yearly"),
+        ("/mentions-legales", "0.3", "yearly"),
+        ("/confidentialite", "0.3", "yearly"),
+        ("/cgv", "0.3", "yearly"),
+    ]
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for path, prio, freq in static_pages:
+        lines.append(f"<url><loc>{SITE_DOMAIN}{path}</loc><changefreq>{freq}</changefreq><priority>{prio}</priority></url>")
+    for p in prayers:
+        s = slugify_title(p.get("title", ""))
+        if s:
+            lastmod = (p.get("created_at") or "")[:10]
+            lm = f"<lastmod>{lastmod}</lastmod>" if lastmod else ""
+            lines.append(f"<url><loc>{SITE_DOMAIN}/priere/{s}</loc>{lm}<changefreq>monthly</changefreq><priority>0.7</priority></url>")
+    lines.append("</urlset>")
+    return Response(content="\n".join(lines), media_type="application/xml")
+
 
 # ----------- Routes: Admin Prayer Management -----------
 class PrayerCreate(BaseModel):

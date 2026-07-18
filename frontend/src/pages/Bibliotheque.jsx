@@ -4,6 +4,7 @@ import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { HeartPulse, Shield, Flame, Sparkles as SparklesIcon, HandHelping, Moon, Lock, ScrollText, Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { useSEO } from "@/hooks/useSEO";
 
 const ICONS = { soins: HeartPulse, protection: Shield, exorcisme: Flame, aide: HandHelping, esoterisme: SparklesIcon, wicca: Moon };
 
@@ -81,6 +82,13 @@ const Bibliotheque = () => {
     }
   };
 
+  useSEO({
+    title: activeCat === "all" ? "Bibliothèque des prières" : (categories.find(c => c.slug === activeCat)?.name || "Bibliothèque"),
+    description: "Explorez notre bibliothèque de plus de 100 prières traditionnelles : soins, protection, exorcisme, délivrance, aide et remerciements, wicca et traditions celtiques.",
+    path: "/bibliotheque",
+    keywords: "prières, prière de protection, prière de guérison, prière de délivrance, exorcisme, prière catholique, bibliothèque de prières",
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-10 py-20" data-testid="library-page">
       <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
@@ -129,7 +137,11 @@ const Bibliotheque = () => {
             const Icon = ICONS[p.category_slug] || ScrollText;
             return (
               <div key={p.id} className="sacred-card sharp p-8 flex flex-col gap-4 group relative" data-testid={`prayer-card-${p.id}`}>
-                <button onClick={() => setSelected(p)} className="text-left flex flex-col gap-4 flex-1">
+                <Link
+                  to={`/priere/${p.slug || p.id}`}
+                  className="text-left flex flex-col gap-4 flex-1 no-underline"
+                  data-testid={`prayer-card-link-${p.id}`}
+                >
                   <div className="flex justify-between items-start">
                     <Icon className="text-[var(--gold)]" strokeWidth={1.1} size={28} />
                     {p.is_premium && (
@@ -141,7 +153,7 @@ const Bibliotheque = () => {
                   <h3 className="font-serif-display text-2xl text-[var(--ivory)] leading-tight">{p.title}</h3>
                   <p className="font-serif-body italic text-[var(--ivory-muted)] text-sm leading-relaxed">{p.excerpt}</p>
                   <span className="font-engraved text-[10px] text-[var(--gold)] mt-auto">Lire →</span>
-                </button>
+                </Link>
                 {isAdmin && (
                   <div className="flex gap-2 pt-3 border-t border-[rgba(212,175,55,0.12)]">
                     <button

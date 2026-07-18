@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { HeartPulse, Shield, Flame, ScrollText } from "lucide-react";
+import { useSEO, ORG_JSONLD } from "@/hooks/useSEO";
 
 const HERO_IMG = "https://images.unsplash.com/photo-1601922046210-41e129a3e64a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwzfHxjYW5kbGVsaWdodCUyMGRhcmslMjBtYWNyb3xlbnwwfHx8fDE3ODE3ODYxMjJ8MA&ixlib=rb-4.1.0&q=85";
 
@@ -11,6 +12,26 @@ const pillars = [
 ];
 
 const Home = () => {
+  useSEO({
+    title: "Prières traditionnelles de soins, protection et délivrance",
+    description: "Bibliothèque non-confessionnelle de plus de 100 prières traditionnelles : soins, protection spirituelle, exorcisme, délivrance et aide. Accès à vie pour 29 €.",
+    path: "/",
+    keywords: "prière de délivrance, prière d'exorcisme, prière de protection, prière de guérison, bibliothèque de prières, MCS-Éditions",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Prières · Soins · Délivrance",
+      url: "https://prieres-soins-delivrance.fr",
+      inLanguage: "fr-FR",
+      publisher: ORG_JSONLD,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://prieres-soins-delivrance.fr/bibliotheque?q={query}",
+        "query-input": "required name=query",
+      },
+    },
+  });
+
   return (
     <div data-testid="home-page">
       {/* HERO with disclaimer text */}
