@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { Flame, Check, Sparkles } from "lucide-react";
+import { Flame, Check, Sparkles, BookOpen } from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
 
 const Abonnement = () => {
@@ -14,12 +14,14 @@ const Abonnement = () => {
   });
   const [pkg, setPkg] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({ prayers_count: 109 });
   const { user } = useAuth();
 
   useEffect(() => {
     api.get("/donations/packages").then(({ data }) => {
       setPkg(data[0] || null);
     });
+    api.get("/stats/public").then(({ data }) => setStats(data)).catch(() => {});
   }, []);
 
   const checkout = async () => {
@@ -52,6 +54,31 @@ const Abonnement = () => {
         Un seul engagement vous ouvre l'ensemble des contenus du site&nbsp;: prières scellées, rituels et matériel,
         et tout ce qui sera ajouté au fil du temps.
       </p>
+
+      {/* Social proof strip */}
+      <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 py-6 mb-12 border-t border-b border-[rgba(212,175,55,0.15)]" data-testid="abonnement-social-proof">
+        <div className="flex items-center gap-3">
+          <BookOpen className="text-[var(--gold)]" strokeWidth={1.2} size={22} />
+          <div>
+            <p className="font-serif-display text-2xl text-[var(--ivory)]" data-testid="stat-prayers-count">{stats.prayers_count}</p>
+            <p className="font-engraved text-[9px] text-[var(--ivory-muted)] tracking-widest">PRIÈRES INCLUSES</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Flame className="text-[var(--gold)]" strokeWidth={1.2} size={22} />
+          <div>
+            <p className="font-serif-display text-2xl text-[var(--ivory)]">À vie</p>
+            <p className="font-engraved text-[9px] text-[var(--ivory-muted)] tracking-widest">SANS RENOUVELLEMENT</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Sparkles className="text-[var(--gold)]" strokeWidth={1.2} size={22} />
+          <div>
+            <p className="font-serif-display text-2xl text-[var(--ivory)]">+ ajouts</p>
+            <p className="font-engraved text-[9px] text-[var(--ivory-muted)] tracking-widest">FUTURES PRIÈRES INCLUSES</p>
+          </div>
+        </div>
+      </div>
 
       {!user && (
         <div className="sacred-card sharp p-6 mb-10 border-l-4 border-l-[var(--gold)]" data-testid="abonnement-auth-hint">

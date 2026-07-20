@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { HeartPulse, Shield, Flame, ScrollText } from "lucide-react";
+import { HeartPulse, Shield, Flame, ScrollText, Sparkles, Quote } from "lucide-react";
+import api from "@/lib/api";
 import { useSEO, ORG_JSONLD } from "@/hooks/useSEO";
 
 const HERO_IMG = "https://images.unsplash.com/photo-1601922046210-41e129a3e64a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwzfHxjYW5kbGVsaWdodCUyMGRhcmslMjBtYWNyb3xlbnwwfHx8fDE3ODE3ODYxMjJ8MA&ixlib=rb-4.1.0&q=85";
@@ -31,6 +32,14 @@ const Home = () => {
       },
     },
   });
+
+  const [stats, setStats] = useState({ prayers_count: 109, donors_count: 0 });
+  const [testimonies, setTestimonies] = useState([]);
+
+  useEffect(() => {
+    api.get("/stats/public").then(({ data }) => setStats(data)).catch(() => {});
+    api.get("/testimonies").then(({ data }) => setTestimonies(data.slice(0, 2))).catch(() => {});
+  }, []);
 
   return (
     <div data-testid="home-page">
@@ -97,6 +106,71 @@ const Home = () => {
           ))}
         </div>
       </section>
+
+      {/* Social proof banner */}
+      <section className="border-t border-[rgba(212,175,55,0.1)] bg-[rgba(212,175,55,0.03)]" data-testid="social-proof">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-16">
+          <div className="grid md:grid-cols-3 gap-10 text-center">
+            <div>
+              <p className="font-serif-display text-5xl md:text-6xl text-[var(--gold)]" data-testid="stat-prayers">
+                {stats.prayers_count}
+              </p>
+              <p className="font-engraved text-[10px] text-[var(--ivory-muted)] mt-3 tracking-widest">
+                PRIÈRES TRADITIONNELLES
+              </p>
+            </div>
+            <div>
+              <p className="font-serif-display text-5xl md:text-6xl text-[var(--gold)]">5</p>
+              <p className="font-engraved text-[10px] text-[var(--ivory-muted)] mt-3 tracking-widest">
+                DOMAINES SACRÉS
+              </p>
+            </div>
+            <div>
+              <p className="font-serif-display text-5xl md:text-6xl text-[var(--gold)]">29€</p>
+              <p className="font-engraved text-[10px] text-[var(--ivory-muted)] mt-3 tracking-widest">
+                UN SEUL PAIEMENT · À VIE
+              </p>
+            </div>
+          </div>
+          <div className="divider-ornament my-12"><Sparkles size={14} strokeWidth={1.2} /></div>
+          <p className="font-serif-body italic text-[var(--ivory-muted)] text-center max-w-2xl mx-auto leading-relaxed">
+            Une bibliothèque unique préservant des prières rares — certaines transmises depuis
+            plusieurs siècles — pour accompagner les âmes en quête de soins, de protection et de délivrance.
+          </p>
+        </div>
+      </section>
+
+      {/* Testimonies preview */}
+      {testimonies.length > 0 && (
+        <section className="border-t border-[rgba(212,175,55,0.1)]" data-testid="home-testimonies">
+          <div className="max-w-6xl mx-auto px-6 lg:px-10 py-20">
+            <p className="font-engraved text-[var(--gold)] text-[11px] mb-4 text-center tracking-widest">
+              ✦  Voix recueillies  ✦
+            </p>
+            <h2 className="font-serif-display text-4xl md:text-5xl text-[var(--ivory)] text-center mb-14">
+              <em className="text-[var(--gold)]">Témoignages</em>
+            </h2>
+            <div className="grid md:grid-cols-2 gap-px bg-[rgba(212,175,55,0.12)]">
+              {testimonies.map((t) => (
+                <div key={t.id} className="sacred-card sharp p-10 md:p-12" data-testid={`home-testimony-${t.id}`}>
+                  <Quote className="text-[var(--gold)] mb-4" strokeWidth={1.1} size={22} />
+                  <p className="font-serif-display text-lg md:text-xl italic text-[var(--ivory)] leading-relaxed mb-6">
+                    « {t.text} »
+                  </p>
+                  <p className="font-engraved text-[10px] text-[var(--gold)] tracking-widest">
+                    {t.name} — {t.city}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-10">
+              <Link to="/temoignages" className="font-engraved text-[10px] text-[var(--gold)] tracking-widest hover:opacity-70 transition" data-testid="view-all-testimonies">
+                LIRE TOUS LES TÉMOIGNAGES →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

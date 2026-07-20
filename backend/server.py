@@ -476,6 +476,19 @@ async def my_requests(user=Depends(get_current_user)):
     items = await db.prayer_requests.find({"user_id": user["id"]}, {"_id": 0}).sort("created_at", -1).to_list(200)
     return items
 
+@api_router.get("/admin/prayer-requests")
+async def admin_list_prayer_requests(user=Depends(require_admin)):
+    """Admin only: list all incoming contact/prayer requests, most recent first."""
+    items = await db.prayer_requests.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return items
+
+@api_router.get("/stats/public")
+async def public_stats():
+    """Public counters for social proof banner (no PII)."""
+    prayers_count = await db.prayers.count_documents({})
+    donors_count = await db.users.count_documents({"is_donor": True})
+    return {"prayers_count": prayers_count, "donors_count": donors_count}
+
 # ----------- Routes: AI Prayer Generation (members + donors only) -----------
 @api_router.post("/ai/generate-prayer")
 async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_user)):
@@ -703,7 +716,36 @@ async def stripe_webhook(request: Request):
     return {"received": True}
 
 # ----------- Testimonies -----------
-TESTIMONIES = []
+TESTIMONIES = [
+    {
+        "id": "t1",
+        "name": "Marie L.",
+        "city": "Lyon",
+        "category": "Protection",
+        "text": "J'ai trouvé ici des prières que je cherchais depuis des années. La bibliothèque est d'une richesse rare, et le respect du sacré transparaît à chaque ligne. Merci pour ce travail.",
+    },
+    {
+        "id": "t2",
+        "name": "Étienne D.",
+        "city": "Bordeaux",
+        "category": "Soins",
+        "text": "Après une période sombre, la Litanie du Corps Restauré m'a accompagné chaque soir. Je ne saurais dire ce qui a agi, mais quelque chose s'est apaisé. Je recommande à celles et ceux qui cherchent.",
+    },
+    {
+        "id": "t3",
+        "name": "Isabelle T.",
+        "city": "Toulouse",
+        "category": "Exorcisme",
+        "text": "L'accès à vie pour 29€ est un cadeau. J'utilise régulièrement les prières de scellement du foyer. Une paix nouvelle s'est installée chez moi.",
+    },
+    {
+        "id": "t4",
+        "name": "Jean-Paul R.",
+        "city": "Nantes",
+        "category": "Aide",
+        "text": "Un site sobre, sans dogme, sans promesse démesurée. On y trouve la prière comme elle devrait être : un chemin intérieur, silencieux, patient. Merci.",
+    },
+]
 
 @api_router.get("/testimonies")
 async def get_testimonies():

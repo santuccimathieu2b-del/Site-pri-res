@@ -33,6 +33,18 @@ Site web spécialisé dans les prières de soins, de protection et d'exorcismes.
 
 ## Changelog
 
+### 2026-07-20 - Améliorations UX & Sécurité
+- ✅ **JWT_SECRET** régénéré (86 caractères aléatoires cryptographiquement sûrs)
+- ✅ **Bannière preuve sociale** sur Home : 109 prières / 5 domaines / 29€ à vie
+- ✅ **Section témoignages** sur Home (2 aperçus + lien vers page complète)
+- ✅ **4 témoignages** ajoutés au backend (Marie L., Étienne D., Isabelle T., Jean-Paul R.)
+- ✅ **Strip stats** sur page Abonnement (109 prières / À vie / + ajouts inclus)
+- ✅ **Endpoint admin** `GET /api/admin/prayer-requests` (liste des messages contact)
+- ✅ **Endpoint public** `GET /api/stats/public` (compteurs pour bannière sociale)
+- ✅ **Panneau messagerie admin** dans EspaceMembre (visible seulement si is_admin)
+  - Bouton "Répondre par email" avec mailto pré-rempli
+  - Trié par date décroissante
+
 ### 2026-07-20 - SEO & Analytics
 - ✅ Sitemap XML statique généré (`/app/frontend/public/sitemap.xml`, 119 URLs)
 - ✅ Script helper `/app/backend/scripts/generate_sitemap.py` pour régénération

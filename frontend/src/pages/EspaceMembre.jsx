@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { Sparkles, ScrollText, Lock, Flame } from "lucide-react";
+import { Sparkles, ScrollText, Lock, Flame, Inbox } from "lucide-react";
 import { toast } from "sonner";
 
 const EspaceMembre = () => {
@@ -12,12 +12,16 @@ const EspaceMembre = () => {
   const [aiForm, setAiForm] = useState({ category: "soins", tone: "doux", intention: "" });
   const [generating, setGenerating] = useState(false);
   const [latest, setLatest] = useState(null);
+  const [adminMessages, setAdminMessages] = useState([]);
 
   useEffect(() => {
     if (!user) return;
     api.get("/prayer-requests/mine").then(({ data }) => setRequests(data));
     if (user.is_donor) {
       api.get("/ai/my-prayers").then(({ data }) => setAiPrayers(data));
+    }
+    if (user.is_admin) {
+      api.get("/admin/prayer-requests").then(({ data }) => setAdminMessages(data)).catch(() => {});
     }
   }, [user]);
 
@@ -171,6 +175,50 @@ const EspaceMembre = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {user.is_admin && (
+        <div className="sacred-card sharp p-10 mt-10 border-t-2 border-[var(--gold)]/30" data-testid="admin-messages">
+          <div className="flex items-center gap-3 mb-6">
+            <Inbox className="text-[var(--gold)]" strokeWidth={1.1} size={28} />
+            <h2 className="font-serif-display text-3xl text-[var(--ivory)]">
+              Messagerie <em className="text-[var(--gold)]">— Admin</em>
+            </h2>
+            <span className="ml-auto font-engraved text-[10px] text-[var(--ivory-muted)] tracking-widest">
+              {adminMessages.length} MESSAGE{adminMessages.length > 1 ? "S" : ""}
+            </span>
+          </div>
+          {adminMessages.length === 0 ? (
+            <p className="font-serif-body italic text-[var(--ivory-muted)]">
+              Aucun message reçu pour l'instant. Les messages du formulaire de contact apparaîtront ici.
+            </p>
+          ) : (
+            <ul className="space-y-6 max-h-[600px] overflow-y-auto pr-3">
+              {adminMessages.map((m) => (
+                <li key={m.id} className="border-l-2 border-[var(--gold)]/40 pl-5" data-testid={`admin-msg-${m.id}`}>
+                  <div className="flex items-baseline justify-between flex-wrap gap-2 mb-2">
+                    <p className="font-serif-display text-lg text-[var(--ivory)]">
+                      {m.name} <span className="text-[var(--ivory-muted)] text-sm font-serif-body">— {m.email}</span>
+                    </p>
+                    <p className="font-engraved text-[10px] text-[var(--gold)] tracking-widest">
+                      {new Date(m.created_at).toLocaleString("fr-FR")}
+                    </p>
+                  </div>
+                  <p className="font-serif-body text-[var(--ivory)] whitespace-pre-line leading-relaxed">
+                    {m.intention}
+                  </p>
+                  <a
+                    href={`mailto:${m.email}?subject=Réponse à votre message&body=Bonjour ${m.name},%0D%0A%0D%0A`}
+                    className="inline-block mt-3 font-engraved text-[10px] text-[var(--gold)] tracking-widest hover:opacity-70 transition"
+                    data-testid={`admin-reply-${m.id}`}
+                  >
+                    RÉPONDRE PAR EMAIL →
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
     </div>
