@@ -52,14 +52,14 @@ const Pratique = () => {
           <h2 className="font-serif-display text-3xl text-[var(--ivory)]">Utilisation des prières</h2>
         </div>
         <div className="font-serif-body text-[var(--ivory-muted)] text-lg leading-loose space-y-5">
-          {PARA_UTILISATION.map((p, i) => <p key={i}>{p}</p>)}
+          {PARA_UTILISATION.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
           <div className="sacred-card sharp p-5 border-l-4 border-l-[var(--gold)] my-6">
             <p className="text-sm">
               <span className="font-engraved text-[var(--gold)] text-[10px] mr-2">Rappel :</span>
               {RAPPEL}
             </p>
           </div>
-          {PARA_UTILISATION_2.map((p, i) => <p key={i}>{p}</p>)}
+          {PARA_UTILISATION_2.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
         </div>
       </section>
 
@@ -71,7 +71,7 @@ const Pratique = () => {
           <h2 className="font-serif-display text-3xl text-[var(--ivory)]">Se faire payer ?</h2>
         </div>
         <div className="font-serif-body text-[var(--ivory-muted)] text-lg leading-loose space-y-5">
-          {PARA_PAYER.map((p, i) => <p key={i}>{p}</p>)}
+          {PARA_PAYER.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
           <div className="sacred-card sharp p-6 mt-8">
             <p className="font-engraved text-[var(--gold)] text-[10px] mb-3">{SITE_PAYANT_TITRE}</p>
             <p className="text-base">{SITE_PAYANT_1}</p>
@@ -93,7 +93,7 @@ const Pratique = () => {
 
         <ul className="space-y-5">
           {IMPERATIFS.map((txt, i) => (
-            <li key={i} className="flex gap-5 items-start" data-testid={`imperatif-${i}`}>
+            <li key={txt.slice(0, 40)} className="flex gap-5 items-start" data-testid={`imperatif-${i}`}>
               <span className="font-serif-display text-3xl text-[var(--gold)] leading-none mt-1">{i + 1}</span>
               <p className="font-serif-body text-[var(--ivory)] text-lg leading-relaxed flex-1">{txt}</p>
             </li>

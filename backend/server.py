@@ -529,6 +529,9 @@ async def generate_prayer(payload: AIPrayerRequest, user=Depends(get_current_use
         logger.error(f"AI generation failed: {e}")
         raise HTTPException(500, "La composition de la prière a échoué.")
 
+    if not text:
+        raise HTTPException(500, "La composition de la prière a échoué.")
+
     # store
     doc = {
         "id": str(uuid.uuid4()),

@@ -128,7 +128,7 @@ const Abonnement = () => {
           <h3 className="font-serif-display text-3xl text-[var(--ivory)] mb-6">Ce que vous recevez</h3>
           <ul className="space-y-5">
             {benefits.map((b, i) => (
-              <li key={i} className="flex gap-3 items-start font-serif-body text-[var(--ivory)]" data-testid={`benefit-${i}`}>
+              <li key={b} className="flex gap-3 items-start font-serif-body text-[var(--ivory)]" data-testid={`benefit-${i}`}>
                 <Check className="text-[var(--gold)] mt-1 shrink-0" strokeWidth={1.4} size={18} />
                 <span className="leading-relaxed">{b}</span>
               </li>
